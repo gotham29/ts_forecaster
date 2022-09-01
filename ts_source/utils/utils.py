@@ -161,9 +161,9 @@ def validate_config(config, data):
         'TransformerModel': {
             'output_chunk_length': [ config['forecast_horizon'] ]  #test_length
             },
-        'RNNModel': {
-            'training_length': [ train_length ]
-            },
+        # 'RNNModel': {
+        #     'training_length': [ train_length ]
+        #     },
         'LightGBMModel': {
             'output_chunk_length': [ config['forecast_horizon'] ]  #test_length
             },

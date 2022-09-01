@@ -36,7 +36,7 @@ def train_models(data_dict:dict, modnames_grids: dict, config: dict):
     # Train all models
     modnames_models, modnames_params, modnames_scores = {}, {}, {}
     for mod_name, mod_grid in modnames_grids.items():
-        print(f"\n  mod_name = {mod_name}")
+        print(f"  mod_name = {mod_name}")
         model_untrained, params, score = gridsearch_model(model=MODNAMES_MODELS[mod_name],
                                                             mod_name=mod_name,
                                                             mod_grid=mod_grid,
