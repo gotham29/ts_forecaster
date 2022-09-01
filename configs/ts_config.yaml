@@ -1,6 +1,6 @@
-test_prop: 0.3
-data_cap: 300
 train_models: True
+test_prop: 0.3
+data_cap: 100
 forecast_horizon: 1
 
 time_col: timestamp
@@ -126,7 +126,7 @@ modnames_grids:
       - 5
       - 10
     training_length:
-      - 5
+      # - 5
       - 10
     model: ## ["RNN", "LSTM", "GRU"]
       # - RNN
@@ -140,5 +140,4 @@ modnames_grids:
     dropout:
       # - 0.0
       - 0.2
-    # training_length: int = 24,
 

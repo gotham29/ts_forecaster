@@ -6,6 +6,7 @@ __pycache__/
 *$py.class
 
 ## ALL DATA
+output/data
 output/models
 output/results
 

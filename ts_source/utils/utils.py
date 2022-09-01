@@ -94,7 +94,7 @@ def validate_config(config, data):
     assert 0.1 <= config['test_prop'] <= 0.7, f"test_prop expected between 0.1 and 0.7! found\n  --> {config['test_prop']}"
 
     # Ensure data_cap between 300 and 100000
-    assert 300 <= config['data_cap'] <= 100000, f"data_cap expected between 100 and 100000! found\n  --> {config['data_cap']}"
+    assert 50 <= config['data_cap'] <= 100000, f"data_cap expected between 50 and 100000! found\n  --> {config['data_cap']}"
 
     known_metrics = ['mape', 'mase']
     # Ensure loss_metric is known
@@ -146,11 +146,10 @@ def validate_config(config, data):
             modnames_unknown.append(modname)
     assert len(modnames_unknown) == 0, f"unknown models found!\n  --> {modnames_unknown}"
 
-    # Add missing keys from modgrids
+    # Add missing keys to modnames_grids
     total_length = data[:config['data_cap']].shape[0]
     train_length = int(total_length*(1-config['test_prop']))
     test_length = int(total_length*config['test_prop'])
-    ## NBEATS
     modnames_missingvals = {
         'NBEATSModel': {
             'output_chunk_length': [ config['forecast_horizon'] ]  #test_length
@@ -161,12 +160,12 @@ def validate_config(config, data):
         'TransformerModel': {
             'output_chunk_length': [ config['forecast_horizon'] ]  #test_length
             },
-        # 'RNNModel': {
-        #     'training_length': [ train_length ]
-        #     },
         'LightGBMModel': {
             'output_chunk_length': [ config['forecast_horizon'] ]  #test_length
             },
+        # 'RNNModel': {
+        #     'training_length': [ train_length ]
+        #     },
     }
     for mod_name, missingvals in modnames_missingvals.items():
         if mod_name not in config['modnames_grids']:
