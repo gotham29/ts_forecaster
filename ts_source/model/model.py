@@ -3,7 +3,13 @@ import time
 import pandas as pd
 import numpy as np
 from darts import TimeSeries
-from darts.metrics import mape, mase
+from darts.metrics import (
+    mape,
+    mase,
+    ope,
+    marre,
+    r2_score,
+    dtw_metric)
 from darts.utils.statistics import check_seasonality, plot_acf, plot_residuals_analysis, plot_hist
 from darts.models import (
     VARIMA,
@@ -16,7 +22,11 @@ from darts.models import (
 
 METRICNAMES_METRICS = {
     'mape': mape,
-    'mase': mase
+    'mase': mase,
+    'ope': ope,
+    'marre': marre,
+    'r2_score': r2_score,
+    'dtw_metric': dtw_metric,
 }
 
 MODNAMES_MODELS = {
