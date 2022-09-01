@@ -1,0 +1,9 @@
+#See http://www.pip-installer.org/en/latest/requirements.html for details
+
+setuptools>=34.4.0
+pip>=19.3.1
+pandas>=1.2.4
+PyYAML>=6.0  #changed from ==
+numpy>=1.15
+sklearn
+darts

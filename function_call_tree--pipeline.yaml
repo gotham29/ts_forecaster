@@ -1,0 +1,11 @@
+run_ts_forecaster
+  cfg                  = load_config(path_config)
+  data                 = load_data(path_data)
+  cfg                  = validate_configdata(cfg, data)
+  train,test           = prep_data(data, cfg['features'])
+  modnames_models      = train_models(train)
+  modnames_scores      = test_models(modnames_models, test)
+  modname_best         = get_model_best(modnames_scores)
+  save_modnames_scores(modnames_scores, cfg['outdirs']['results'])
+  save_models(modnames_models, modname_best, cfg['outdirs']['models'])
+  return modnames_models, modnames_models['modname_best']
