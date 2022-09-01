@@ -86,7 +86,9 @@ def validate_config(config, data):
     assert len(keys_wrongdtypes) == 0, "  wrong data types"
 
     # Ensure paths exist
-    assert os.path.exists(config['dirs']['data_in']), f"data path not found!\n  --> {config['dirs']['data_in']}"
+    if data == False:
+        assert os.path.exists(config['dirs']['data_in']), f"data path not found!\n  --> {config['dirs']['data_in']}"
+    make_dir(config['dirs']['data_out'])
     make_dir(config['dirs']['models_out'])
     make_dir(config['dirs']['results_out'])
 
