@@ -21,8 +21,9 @@ def save_results(modnames_params: dict, modnames_scores: dict, dir_out: str, nam
     results.to_csv(path_out, index=False)
 
 
-def run_pipeline(config):
-    data                                                            = pd.read_csv(config['dirs']['data_in'])
+def run_pipeline(config, data=False):
+    if not data:
+        data                                                        = pd.read_csv(config['dirs']['data_in'])
     config                                                          = validate_config(config, data)
     data_dict                                                       = split_data(data, config['data_cap'], config['time_col'], config['features'], config['test_prop'])
     save_data(data_dict, config['dirs']['data_out'])
@@ -43,7 +44,7 @@ def run_pipeline(config):
 
 if __name__ == '__main__':
     config                          = load_config(get_args().config_path)
-    modnames_models, modname_best   = run_pipeline(config)
+    modnames_models, modname_best   = run_pipeline(config, )
     print('\n  DONE')
 
 """ TEST """

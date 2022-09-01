@@ -169,6 +169,8 @@ def validate_config(config, data):
             },
     }
     for mod_name, missingvals in modnames_missingvals.items():
+        if mod_name not in config['modnames_grids']:
+            continue
         for vname, v in missingvals.items():
             config['modnames_grids'][f'{mod_name}'][f'{vname}'] = v
 
