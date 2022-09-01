@@ -52,13 +52,14 @@ def train_models(data_dict:dict, modnames_grids: dict, config: dict):
     return modnames_models, modnames_params, modnames_scores
 
 
-def get_loss(preds, df_test, time_col, loss_metric):
+def get_loss(preds, df_test, df_train, time_col, loss_metric):
     actuals = TimeSeries.from_dataframe(df_test, time_col=time_col)
-    loss = METRICNAMES_METRICS[loss_metric](actual_series=actuals, pred_series=preds)
+    actuals_train = TimeSeries.from_dataframe(df_train, time_col=time_col)
+    loss = METRICNAMES_METRICS[loss_metric](actual_series=actuals, pred_series=preds, insample=actuals_train)
     return loss
 
 
-def test_models(modnames_models, df_test, time_col, loss_metric):
+def test_models(modnames_models, df_test, df_train, time_col, loss_metric):
     print(f"\nTesting {len(modnames_models)} models on df_test:{df_test.shape}...")
     # Get models predictions
     modnames_preds = {}
@@ -67,13 +68,14 @@ def test_models(modnames_models, df_test, time_col, loss_metric):
     # Scores predictions vs true
     modnames_losses = {}
     for mod_name, preds in modnames_preds.items():
-        modnames_losses[mod_name] = get_loss(preds, df_test, time_col, loss_metric)
+        modnames_losses[mod_name] = get_loss(preds, df_test, df_train, time_col, loss_metric)
     return modnames_losses
 
 
 def gridsearch_model(model, mod_name, mod_grid, data_t0, forecast_horizon, loss_metric, time_col=None, verbose=True):
     model_best = model.gridsearch(parameters=mod_grid,
                                     series=data_t0,  #TimeSeries.from_dataframe(df=data_t0, time_col=time_col),
+                                    insample=data_t0,
                                     forecast_horizon=forecast_horizon,
                                     verbose=verbose,
                                     metric=METRICNAMES_METRICS[loss_metric])
