@@ -52,7 +52,7 @@ def train_models(data_dict:dict, modnames_grids: dict, config: dict):
     return modnames_models, modnames_params, modnames_scores
 
 
-def get_loss(preds, df_test, df_train, time_col, loss_metric):
+def get_loss(preds, df_test, time_col, loss_metric):
     actuals = TimeSeries.from_dataframe(df_test, time_col=time_col)
     loss = METRICNAMES_METRICS[loss_metric](actual_series=actuals, pred_series=preds)
     return loss
