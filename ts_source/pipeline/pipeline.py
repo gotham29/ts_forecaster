@@ -22,7 +22,7 @@ def save_results(modnames_params: dict, modnames_scores: dict, dir_out: str, nam
 
 
 def run_pipeline(config, data=False):
-    if not data:
+    if isinstance(data, bool):
         data                                                        = pd.read_csv(config['dirs']['data_in'])
     config                                                          = validate_config(config, data)
     data_dict                                                       = split_data(data, config['data_cap'], config['time_col'], config['features'], config['test_prop'])

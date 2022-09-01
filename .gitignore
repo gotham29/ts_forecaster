@@ -6,9 +6,9 @@ __pycache__/
 *$py.class
 
 ## ALL DATA
-output/data
-output/models
-output/results
+output/data/*
+output/models/*
+output/results/*
 
 # Mac related
 .DS_Store
