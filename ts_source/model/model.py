@@ -75,7 +75,6 @@ def test_models(modnames_models, df_test, df_train, time_col, loss_metric):
 def gridsearch_model(model, mod_name, mod_grid, data_t0, forecast_horizon, loss_metric, time_col=None, verbose=True):
     model_best = model.gridsearch(parameters=mod_grid,
                                     series=data_t0,  #TimeSeries.from_dataframe(df=data_t0, time_col=time_col),
-                                    insample=data_t0,
                                     forecast_horizon=forecast_horizon,
                                     verbose=verbose,
                                     metric=METRICNAMES_METRICS[loss_metric])
