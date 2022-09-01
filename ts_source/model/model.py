@@ -54,12 +54,11 @@ def train_models(data_dict:dict, modnames_grids: dict, config: dict):
 
 def get_loss(preds, df_test, df_train, time_col, loss_metric):
     actuals = TimeSeries.from_dataframe(df_test, time_col=time_col)
-    actuals_train = TimeSeries.from_dataframe(df_train, time_col=time_col)
-    loss = METRICNAMES_METRICS[loss_metric](actual_series=actuals, pred_series=preds, insample=actuals_train)
+    loss = METRICNAMES_METRICS[loss_metric](actual_series=actuals, pred_series=preds)
     return loss
 
 
-def test_models(modnames_models, df_test, df_train, time_col, loss_metric):
+def test_models(modnames_models, df_test, time_col, loss_metric):
     print(f"\nTesting {len(modnames_models)} models on df_test:{df_test.shape}...")
     # Get models predictions
     modnames_preds = {}
@@ -68,7 +67,7 @@ def test_models(modnames_models, df_test, df_train, time_col, loss_metric):
     # Scores predictions vs true
     modnames_losses = {}
     for mod_name, preds in modnames_preds.items():
-        modnames_losses[mod_name] = get_loss(preds, df_test, df_train, time_col, loss_metric)
+        modnames_losses[mod_name] = get_loss(preds, df_test, time_col, loss_metric)
     return modnames_losses
 
 

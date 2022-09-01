@@ -32,11 +32,11 @@ def run_pipeline(config, data=False):
         save_models(modnames_models, config['dirs']['models_out'])
         save_results(modnames_params, modnames_trainlosses, config['dirs']['results_out'], 'train')
         save_data_as_pickle(modnames_params, os.path.join(config['dirs']['results_out'], 'best_params.pkl') )
-        modnames_testlosses                                         = test_models(modnames_models, data_dict['t1'], data_dict['t0'], config['time_col'], config['loss_metric'])
+        modnames_testlosses                                         = test_models(modnames_models, data_dict['t1'], config['time_col'], config['loss_metric'])
     else: # inference mode, test on 100%
         modnames_models                                             = load_models(config['dirs']['models_out'])
         modnames_params                                             = load_pickle_object_as_data(os.path.join(config['dirs']['results_out'], 'best_params.pkl') )
-        modnames_testlosses                                         = test_models(modnames_models, data_dict['t0t1'], data_dict['t0'], config['time_col'], config['loss_metric'] )
+        modnames_testlosses                                         = test_models(modnames_models, data_dict['t0t1'], config['time_col'], config['loss_metric'] )
     modname_best                                                    = get_model_best(modnames_testlosses)
     save_results(modnames_params, modnames_testlosses, config['dirs']['results_out'], 'test')
     return modnames_models, modname_best
