@@ -37,7 +37,7 @@ def run_pipeline(config, data=False, modnames_testinfs={}):
     else: # inference mode, test on 100%
         modnames_models                                             = load_models(config['dirs']['models_out'])
         modnames_params                                             = load_pickle_object_as_data(os.path.join(config['dirs']['results_out'], 'best_params.pkl') )
-        modnames_testinfs = get_preds(modnames_models, data_dict['t0t1'], config['time_col'])
+        # modnames_testinfs = get_preds(modnames_models, data_dict['t0t1'], config['time_col'])
         # modnames_testlosses                                         = test_models(modnames_models, data_dict['t0t1'], config['time_col'], config['loss_metric'] )
     modname_best                                                    = get_model_best(modnames_testlosses)
     return modnames_models, modname_best, modnames_testinfs
