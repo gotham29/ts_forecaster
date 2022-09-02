@@ -6,6 +6,7 @@ __pycache__/
 *$py.class
 
 ## ALL DATA
+lightning_logs/*
 output/data/*
 output/models/*
 output/results/*
