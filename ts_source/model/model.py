@@ -67,7 +67,7 @@ EVALS_COMPARES = {
 }
 
 
-def train_save_models(data_dict:dict, modnames_grids: dict, dir_models: str, time_col: str, eval_metric: str, forecast_horizon: int): #config: dict):
+def train_save_models(data_dict:dict, modnames_grids: dict, dir_models: str, time_col: str, eval_metric: str, forecast_horizon: int):
     print(f'Training {len(modnames_grids)} models...')
     # Convert df to darts timeseries
     darts_timeseries = TimeSeries.from_dataframe(df=data_dict['t0'], time_col=time_col)
