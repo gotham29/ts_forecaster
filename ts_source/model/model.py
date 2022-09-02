@@ -144,7 +144,7 @@ def get_model_best(modnames_scores, eval_metric):
     better = EVALS_BETTER[eval_metric]
     print(f"  {eval_metric} better = {better}")
     comp = operator.lt
-    if better='higher':
+    if better == 'higher':
         comp = operator.gt
     # Get best model
     best_metric, best_mod = np.inf, None
