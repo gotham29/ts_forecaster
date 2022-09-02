@@ -11,7 +11,7 @@ from ts_source.utils.utils import get_args, load_config, validate_config, save_d
 
 
 def run_pipeline(config: dict, output_dir: str, data=False, data_path=False, modname_best=None):
-    assert not (data==False and data==False), f"run_pipeline needs either 'data'(pd.DataFrame) or 'data_path'(csv)"
+    assert not (data==False and data_path==False), f"run_pipeline needs either 'data'(pd.DataFrame) or 'data_path'(csv)"
     if data==False:
         data                                                        = pd.read_csv(data_path)
     config                                                          = validate_config(config, data, output_dir)
