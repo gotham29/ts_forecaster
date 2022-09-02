@@ -17,13 +17,13 @@ def run_pipeline(config, data=False, modname_best=None):
     data_dict                                                       = split_data(data, config['data_cap'], config['time_col'], config['features'], config['test_prop'])
     save_data(data_dict, config['dirs']['data_out'])
     if config['train_models']: # training mode, test on test_prop%
-        modnames_models, modnames_params, modnames_losses_train     = train_models(data_dict, config['modnames_grids'], config)
+        modnames_models, modnames_params, modnames_evals_train     = train_models(data_dict, config['modnames_grids'], config)
         save_models(modnames_models, config['dirs']['models_out'])
         modnames_preds                                              = get_modnames_preds(modnames_models, data_dict['t1'], config['time_col'], config['forecast_horizon'])
-        modnames_losses_test                                        = get_modnames_evals(modnames_preds, data_dict['t1'], config['time_col'], config['eval_metric'])
-        modname_best                                                = get_model_best(modnames_losses_test, config['eval_metric'])
-        save_results(modnames_params, modnames_losses_train, config['dirs']['results_out'], 'train')
-        save_results(modnames_params, modnames_losses_test, config['dirs']['results_out'], 'test')
+        modnames_evals_test                                         = get_modnames_evals(modnames_preds, data_dict['t1'], config['time_col'], config['eval_metric'])
+        modname_best                                                = get_model_best(modnames_evals_test, config['eval_metric'])
+        save_results(modnames_params, modnames_evals_train, config['dirs']['results_out'], 'train')
+        save_results(modnames_params, modnames_evals_test, config['dirs']['results_out'], 'test')
     else: # inference mode, test on 100%
         modnames_models                                             = load_models(config['dirs']['models_out'])
         modnames_preds                                              = get_modnames_preds(modnames_models, data_dict['t0t1'], config['time_col'], config['forecast_horizon'])

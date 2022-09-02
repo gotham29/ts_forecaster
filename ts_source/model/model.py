@@ -78,7 +78,7 @@ def train_models(data_dict:dict, modnames_grids: dict, config: dict):
                                                             mod_name=mod_name,
                                                             mod_grid=mod_grid,
                                                             data_t0=darts_timeseries,
-                                                            loss_metric=config['loss_metric'],
+                                                            eval_metric=config['eval_metric'],
                                                             forecast_horizon=config['forecast_horizon'],
                                                             time_col=config['time_col'],
                                                             verbose=False)
@@ -121,20 +121,20 @@ def get_modnames_preds(modnames_models, df, time_col, forecast_horizon, LAG_MIN=
 
 
 def get_modnames_evals(modnames_preds, df, time_col, eval_metric):
-    print('Getting modnames_losses...')
-    modnames_losses = {}
+    print('Getting modnames_evals...')
+    modnames_evals = {}
     for mod_name, preds in modnames_preds.items():
-        modnames_losses[mod_name] = get_eval(preds, df, time_col, eval_metric)
+        modnames_evals[mod_name] = get_eval(preds, df, time_col, eval_metric)
     print('  --> done')
-    return modnames_losses
+    return modnames_evals
 
 
-def gridsearch_model(model, mod_name, mod_grid, data_t0, forecast_horizon, loss_metric, time_col=None, verbose=True):
+def gridsearch_model(model, mod_name, mod_grid, data_t0, forecast_horizon, eval_metric, time_col=None, verbose=True):
     model_best = model.gridsearch(parameters=mod_grid,
                                     series=data_t0,  #darts.TimeSeries
                                     forecast_horizon=forecast_horizon,
                                     verbose=verbose,
-                                    metric=METRICNAMES_METRICS[loss_metric])
+                                    metric=METRICNAMES_METRICS[eval_metric])
     return model_best
 
 
