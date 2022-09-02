@@ -97,7 +97,7 @@ def validate_config(config, data, output_dir):
     for od in outdirs:
         od_path = os.path.join(output_dir, od)
         config['dirs'][od] = od_path
-        make_dir(os.path.join(od_path)
+        make_dir(od_path)
 
     # Ensure test prop between 0.1 and 0.7
     assert 0.1 <= config['test_prop'] <= 0.7, f"test_prop expected between 0.1 and 0.7! found\n  --> {config['test_prop']}"
