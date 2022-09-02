@@ -27,7 +27,7 @@ def run_pipeline(config: dict, output_dir: str, data=False, data_path=False, mod
     else: # inference mode, infer on 100%
         modnames_models                                             = load_models(config['dirs']['models'])
         modnames_preds                                              = get_modnames_preds(modnames_models, data_dict['t0t1'], config['time_col'], config['forecast_horizon'])
-    save_data({'modnames_preds': pd.DataFrame(modnames_preds)}, config['dirs']['results'])
+    save_data(modnames_preds, config['dirs']['results'])
     return modnames_models, modname_best, modnames_preds
 
 
@@ -36,3 +36,10 @@ if __name__ == '__main__':
     modnames_models, modname_best, modnames_preds       = run_pipeline(config, data_path=get_args().data_path, output_dir=get_args().output_dir)
     print('\n  DONE')
 
+
+# modnames_models2 = {}
+# for pf in pkl_files:
+#     modname = pf.split('.')[0]
+#     if modname not in modnames_models2:
+#         model = ForecastingModel.load(pkl_path)
+#         modnames_models2[modname] = model

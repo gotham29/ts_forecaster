@@ -4,6 +4,7 @@ import pickle
 import pandas as pd
 import yaml
 from darts.models.forecasting.forecasting_model import ForecastingModel
+from darts.models.forecasting.regression_model import RegressionModel
 
 
 def get_args():
