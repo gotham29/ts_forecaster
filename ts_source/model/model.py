@@ -78,7 +78,8 @@ def get_modnames_preds(modnames_models, df, time_col, forecast_horizon):
     modnames_preds = {}
     series = TimeSeries.from_dataframe(df, time_col=time_col)
     for mod_name, model in modnames_models.items():
-        modnames_preds[mod_name] = model.predict(n=forecast_horizon, series=[series], past_covariates=None, future_covariates=None) #.predict(len(df_test))
+        modnames_preds[mod_name] = model.predict(n=forecast_horizon, series=series) #.predict(len(df_test))
+    return modnames_preds
 
 
 def get_modnames_losses(modnames_preds, df, time_col, loss_metric):
@@ -126,3 +127,13 @@ def get_model_best(modnames_scores):
     print(f"    *{best_mod}*")
     return best_mod
 
+
+def save_results(modnames_params: dict, modnames_scores: dict, dir_out: str, name: str):
+    results = {'name': [], 'params':[], 'score':[]}
+    for mod_name, mod_params in modnames_params.items():
+        results['name'].append(mod_name)
+        results['params'].append(mod_params)
+        results['score'].append(modnames_scores[mod_name])
+    results = pd.DataFrame(results).sort_values(by='score', ascending=True)
+    path_out = os.path.join(dir_out, f'{name}.csv')
+    results.to_csv(path_out, index=False)

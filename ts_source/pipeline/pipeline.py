@@ -5,20 +5,9 @@ import pandas as pd
 _SOURCE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..')
 sys.path.append(_SOURCE_DIR)
 
-from ts_source.model.model import train_models, get_model_best, get_modnames_preds, get_modnames_losses #, test_models
+from ts_source.model.model import train_models, get_model_best, get_modnames_preds, get_loss, get_modnames_losses, save_results  #, test_models
 from ts_source.preprocess.preprocess import split_data
 from ts_source.utils.utils import get_args, load_config, validate_config, save_data, load_models, save_models
-
-
-def save_results(modnames_params: dict, modnames_scores: dict, dir_out: str, name: str):
-    results = {'name': [], 'params':[], 'score':[]}
-    for mod_name, mod_params in modnames_params.items():
-        results['name'].append(mod_name)
-        results['params'].append(mod_params)
-        results['score'].append(modnames_scores[mod_name])
-    results = pd.DataFrame(results).sort_values(by='score', ascending=True)
-    path_out = os.path.join(dir_out, f'{name}.csv')
-    results.to_csv(path_out, index=False)
 
 
 def run_pipeline(config, data=False, modname_best=None, modnames_preds={}):
@@ -28,17 +17,15 @@ def run_pipeline(config, data=False, modname_best=None, modnames_preds={}):
     data_dict                                                       = split_data(data, config['data_cap'], config['time_col'], config['features'], config['test_prop'])
     save_data(data_dict, config['dirs']['data_out'])
     if config['train_models']: # training mode, test on test_prop%
-        modnames_models, modnames_params, modnames_trainlosses      = train_models(data_dict, config['modnames_grids'], config)
+        modnames_models, modnames_params, modnames_losses_train     = train_models(data_dict, config['modnames_grids'], config)
         save_models(modnames_models, config['dirs']['models_out'])
-        # modnames_testlosses                                         = test_models(modnames_models, data_dict['t1'], config['time_col'], config['loss_metric'], config['forecast_horizon'])
         modnames_preds                                              = get_modnames_preds(modnames_models, data_dict['t1'], config['time_col'], config['forecast_horizon'])
-        modnames_trainlosses                                        = get_modnames_losses(modnames_preds, data_dict['t1'], config['time_col'], config['loss_metric'])
-        modname_best                                                = get_model_best(modnames_testlosses)
-        save_results(modnames_params, modnames_trainlosses, config['dirs']['results_out'], 'train')
-        save_results(modnames_params, modnames_testlosses, config['dirs']['results_out'], 'test')
+        modnames_losses_test                                        = get_modnames_losses(modnames_preds, data_dict['t1'], config['time_col'], config['loss_metric'])
+        modname_best                                                = get_model_best(modnames_losses)
+        save_results(modnames_params, modnames_losses_train, config['dirs']['results_out'], 'train')
+        save_results(modnames_params, modnames_losses_test, config['dirs']['results_out'], 'test')
     else: # inference mode, test on 100%
         modnames_models                                             = load_models(config['dirs']['models_out'])
-        # modnames_testinfs = get_preds(modnames_models, data_dict['t0t1'], config['time_col'])
         modnames_preds                                              = get_modnames_preds(modnames_models, data_dict['t0t1'], config['time_col'], config['forecast_horizon'])
     return modnames_models, modname_best, modnames_preds
 
