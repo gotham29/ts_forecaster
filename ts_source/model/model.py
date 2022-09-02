@@ -53,16 +53,16 @@ MODNAMES_LAGPARAMS = {
     'LightGBMModel':'lags',
 }
 
-EVALS_BETTER = {
-    'mae':'lower',
-    'mse':'lower',
-    'rmse':'lower',
-    'mape':'lower',
-    'mase':'lower',
-    'ope':'lower',
-    'marre':'lower',
-    'dtw_metric':'lower',
-    'r2_score':'higher',
+EVALS_COMPARES = {
+    'mae':operator.lt,
+    'mse':operator.lt,
+    'rmse':operator.lt,
+    'mape':operator.lt,
+    'mase':operator.lt,
+    'ope':operator.lt,
+    'marre':operator.lt,
+    'dtw_metric':operator.lt,
+    'r2_score':operator.gt,
 }
 
 
@@ -140,12 +140,9 @@ def gridsearch_model(model, mod_name, mod_grid, data_t0, forecast_horizon, eval_
 
 def get_model_best(modnames_scores, eval_metric):
     print("Getting best model...")
-    # Check how to use eval metric
-    better = EVALS_BETTER[eval_metric]
-    print(f"  {eval_metric} better = {better}")
-    comp = operator.lt
-    if better == 'higher':
-        comp = operator.gt
+    # Get compare function for eval_metric
+    comp = EVALS_COMPARES[eval_metric]
+    print(f"  eval = {eval_metric}\n  comp = {comp}")
     # Get best model
     best_metric, best_mod = np.inf, None
     for mod_name, current_metric in modnames_scores.items():
