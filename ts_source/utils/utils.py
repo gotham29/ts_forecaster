@@ -97,7 +97,7 @@ def validate_config(config, data):
     # Ensure data_cap between 300 and 100000
     assert 50 <= config['data_cap'] <= 100000, f"data_cap expected between 50 and 100000! found\n  --> {config['data_cap']}"
 
-    known_metrics = ['mape', 'mase', 'ope', 'marre', 'r2_score', 'dtw_metric']
+    known_metrics = ['mae', 'mse', 'rmse', 'mape', 'mase', 'ope', 'marre', 'r2_score', 'dtw_metric']
     # Ensure loss_metric is known
     assert config['loss_metric'] in known_metrics, f"loss_metric unknown! --> {config['loss_metric']}\nKnown --> {known_metrics}"
 

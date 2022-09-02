@@ -21,7 +21,7 @@ def save_results(modnames_params: dict, modnames_scores: dict, dir_out: str, nam
     results.to_csv(path_out, index=False)
 
 
-def run_pipeline(config, data=False):
+def run_pipeline(config, data=False, modnames_testinfs={}):
     if isinstance(data, bool):
         data                                                        = pd.read_csv(config['dirs']['data_in'])
     config                                                          = validate_config(config, data)
@@ -33,18 +33,19 @@ def run_pipeline(config, data=False):
         save_results(modnames_params, modnames_trainlosses, config['dirs']['results_out'], 'train')
         save_data_as_pickle(modnames_params, os.path.join(config['dirs']['results_out'], 'best_params.pkl') )
         modnames_testlosses                                         = test_models(modnames_models, data_dict['t1'], config['time_col'], config['loss_metric'])
+        save_results(modnames_params, modnames_testlosses, config['dirs']['results_out'], 'test')
     else: # inference mode, test on 100%
         modnames_models                                             = load_models(config['dirs']['models_out'])
         modnames_params                                             = load_pickle_object_as_data(os.path.join(config['dirs']['results_out'], 'best_params.pkl') )
-        modnames_testlosses                                         = test_models(modnames_models, data_dict['t0t1'], config['time_col'], config['loss_metric'] )
+        modnames_testinfs = get_preds(modnames_models, data_dict['t0t1'], config['time_col'])
+        # modnames_testlosses                                         = test_models(modnames_models, data_dict['t0t1'], config['time_col'], config['loss_metric'] )
     modname_best                                                    = get_model_best(modnames_testlosses)
-    save_results(modnames_params, modnames_testlosses, config['dirs']['results_out'], 'test')
-    return modnames_models, modname_best
+    return modnames_models, modname_best, modnames_testinfs
 
 
 if __name__ == '__main__':
     config                          = load_config(get_args().config_path)
-    modnames_models, modname_best   = run_pipeline(config, )
+    modnames_models, modname_best   = run_pipeline(config)
     print('\n  DONE')
 
 """ TEST """

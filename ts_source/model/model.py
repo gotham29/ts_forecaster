@@ -6,6 +6,9 @@ from darts import TimeSeries
 from darts.metrics import (
     mape,
     mase,
+    mse,
+    rmse,
+    mae,
     ope,
     marre,
     r2_score,
@@ -23,6 +26,9 @@ from darts.models import (
 METRICNAMES_METRICS = {
     'mape': mape,
     'mase': mase,
+    'mae': mae,
+    'mse': mse,
+    'rmse': rmse,
     'ope': ope,
     'marre': marre,
     'r2_score': r2_score,
