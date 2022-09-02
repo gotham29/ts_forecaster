@@ -10,7 +10,7 @@ from ts_source.preprocess.preprocess import split_data
 from ts_source.utils.utils import get_args, load_config, validate_config, save_data, load_models, save_models
 
 
-def run_pipeline(config, data=False, modname_best=None, modnames_preds={}):
+def run_pipeline(config, data=False, modname_best=None):
     if isinstance(data, bool):
         data                                                        = pd.read_csv(config['dirs']['data_in'])
     config                                                          = validate_config(config, data)
@@ -21,7 +21,7 @@ def run_pipeline(config, data=False, modname_best=None, modnames_preds={}):
         save_models(modnames_models, config['dirs']['models_out'])
         modnames_preds                                              = get_modnames_preds(modnames_models, data_dict['t1'], config['time_col'], config['forecast_horizon'])
         modnames_losses_test                                        = get_modnames_losses(modnames_preds, data_dict['t1'], config['time_col'], config['loss_metric'])
-        modname_best                                                = get_model_best(modnames_losses)
+        modname_best                                                = get_model_best(modnames_losses_test)
         save_results(modnames_params, modnames_losses_train, config['dirs']['results_out'], 'train')
         save_results(modnames_params, modnames_losses_test, config['dirs']['results_out'], 'test')
     else: # inference mode, test on 100%
@@ -32,10 +32,6 @@ def run_pipeline(config, data=False, modname_best=None, modnames_preds={}):
 
 if __name__ == '__main__':
     config                                              = load_config(get_args().config_path)
-    modnames_models, modname_best, modnames_testinfs    = run_pipeline(config)
+    modnames_models, modname_best, modnames_preds       = run_pipeline(config)
     print('\n  DONE')
 
-""" TEST """
-# config_path = "/Users/samheiserman/Desktop/PhD/Motion-Print/configs/run_pipeline.yaml"
-# config = load_config(config_path)
-# run_pipeline(config)
