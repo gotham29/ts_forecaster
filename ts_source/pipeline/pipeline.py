@@ -5,7 +5,7 @@ import pandas as pd
 _SOURCE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..')
 sys.path.append(_SOURCE_DIR)
 
-from ts_source.model.model import train_models, get_model_best, get_modnames_preds, get_modnames_evals, save_results
+from ts_source.model.model import train_models, get_model_best, get_modnames_preds, get_modnames_evals, save_results, EVALS_BETTER
 from ts_source.preprocess.preprocess import split_data
 from ts_source.utils.utils import get_args, load_config, validate_config, save_data, load_models, save_models
 
@@ -20,8 +20,8 @@ def run_pipeline(config, data=False, modname_best=None):
         modnames_models, modnames_params, modnames_losses_train     = train_models(data_dict, config['modnames_grids'], config)
         save_models(modnames_models, config['dirs']['models_out'])
         modnames_preds                                              = get_modnames_preds(modnames_models, data_dict['t1'], config['time_col'], config['forecast_horizon'])
-        modnames_losses_test                                        = get_modnames_evals(modnames_preds, data_dict['t1'], config['time_col'], config['loss_metric'])
-        modname_best                                                = get_model_best(modnames_losses_test)
+        modnames_losses_test                                        = get_modnames_evals(modnames_preds, data_dict['t1'], config['time_col'], config['eval_metric'])
+        modname_best                                                = get_model_best(modnames_losses_test, config['eval_metric'])
         save_results(modnames_params, modnames_losses_train, config['dirs']['results_out'], 'train')
         save_results(modnames_params, modnames_losses_test, config['dirs']['results_out'], 'test')
     else: # inference mode, test on 100%

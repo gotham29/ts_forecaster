@@ -70,7 +70,7 @@ def validate_config(config, data):
         'modnames_grids': dict,
         'data_cap': int,
         'forecast_horizon': int,
-        'loss_metric': str,
+        'eval_metric': str,
         'time_col': str
     }
     keys_missing = []
@@ -99,8 +99,8 @@ def validate_config(config, data):
     assert 50 <= config['data_cap'] <= 100000, f"data_cap expected between 50 and 100000! found\n  --> {config['data_cap']}"
 
     known_metrics = ['mae', 'mse', 'rmse', 'mape', 'mase', 'ope', 'marre', 'r2_score', 'dtw_metric']
-    # Ensure loss_metric is known
-    assert config['loss_metric'] in known_metrics, f"loss_metric unknown! --> {config['loss_metric']}\nKnown --> {known_metrics}"
+    # Ensure eval_metric is known
+    assert config['eval_metric'] in known_metrics, f"eval_metric unknown! --> {config['eval_metric']}\nKnown --> {known_metrics}"
 
     # Ensure time_col in data
     assert config['time_col'] in data, f"time_col not found in data! --> {config['time_col']}\nFound --> {sorted(data.columns)}"
