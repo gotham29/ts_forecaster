@@ -67,10 +67,10 @@ EVALS_COMPARES = {
 }
 
 
-def train_models(data_dict:dict, modnames_grids: dict, config: dict):
+def train_save_models(data_dict:dict, modnames_grids: dict, dir_models: str, time_col: str, eval_metric: str, forecast_horizon: int): #config: dict):
     print(f'Training {len(modnames_grids)} models...')
     # Convert df to darts timeseries
-    darts_timeseries = TimeSeries.from_dataframe(df=data_dict['t0'], time_col=config['time_col'])
+    darts_timeseries = TimeSeries.from_dataframe(df=data_dict['t0'], time_col=time_col)
     # Train all models
     modnames_models, modnames_params, modnames_scores = {}, {}, {}
     for mod_name, mod_grid in modnames_grids.items():
@@ -79,14 +79,16 @@ def train_models(data_dict:dict, modnames_grids: dict, config: dict):
                                                             mod_name=mod_name,
                                                             mod_grid=mod_grid,
                                                             data_t0=darts_timeseries,
-                                                            eval_metric=config['eval_metric'],
-                                                            forecast_horizon=config['forecast_horizon'],
-                                                            time_col=config['time_col'],
+                                                            eval_metric=eval_metric,
+                                                            forecast_horizon=forecast_horizon,
+                                                            time_col=time_col,
                                                             verbose=False)
         modnames_models[mod_name] = model_untrained.fit(series=darts_timeseries)
         modnames_params[mod_name] = params
         modnames_scores[mod_name] = score
-        print(f"    best params --> {params}")
+        path_out = os.path.join(dir_models, f"{mod_name}.pkl")
+        model.save(path_out)
+        print(f"    params = {params}; score = {score}")
     return modnames_models, modnames_params, modnames_scores
 
 
