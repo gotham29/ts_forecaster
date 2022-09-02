@@ -87,8 +87,8 @@ def train_save_models(data_dict:dict, modnames_grids: dict, dir_models: str, tim
         modnames_models[mod_name] = model_untrained.fit(series=darts_timeseries)
         modnames_params[mod_name] = params
         modnames_scores[mod_name] = score
-        path_out = os.path.join(dir_models, f"{mod_name}.pkl")
-        modnames_models[mod_name].save(path_out)
+        # path_out = os.path.join(dir_models, f"{mod_name}.pkl")
+        # modnames_models[mod_name].save(path_out)
         print(f"    params = {params}; score = {score}")
     return modnames_models, modnames_params, modnames_scores
 
