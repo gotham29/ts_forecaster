@@ -11,6 +11,10 @@ def get_args():
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('-cp', '--config_path', required=True,
                         help='path to config')
+    parser.add_argument('-dp', '--data_path', required=True,
+                        help='path to data')
+    parser.add_argument('-od', '--output_dir', required=True,
+                        help='dir to send outputs')
     return parser.parse_args()
 
 
@@ -60,18 +64,18 @@ def save_data_as_pickle(data_struct, f_path):
     return True
 
 
-def validate_config(config, data):
+def validate_config(config, data, output_dir):
     print('\nValidating Config...')
     # Ensure expected keys present and correct type
     keys_dtypes = {
         'test_prop': float,
-        'dirs': dict,
         'features': dict,
         'modnames_grids': dict,
         'data_cap': int,
         'forecast_horizon': int,
         'eval_metric': str,
-        'time_col': str
+        'time_col': str,
+        'train_models': bool
     }
     keys_missing = []
     keys_wrongdtypes = {}
@@ -87,10 +91,13 @@ def validate_config(config, data):
     assert len(keys_wrongdtypes) == 0, "  wrong data types"
 
     # Ensure paths exist
-    if isinstance(data, bool):
-        assert os.path.exists(config['dirs']['data_in']), f"data path not found!\n  --> {config['dirs']['data_in']}"
-    make_dir(config['dirs']['models_out'])
-    make_dir(config['dirs']['results_out'])
+    outdirs = ['data', 'models', 'results']
+    config['dirs'] = {}
+    make_dir(output_dir)
+    for od in outdirs:
+        od_path = os.path.join(output_dir, od)
+        config['dirs'][od] = od_path
+        make_dir(os.path.join(od_path)
 
     # Ensure test prop between 0.1 and 0.7
     assert 0.1 <= config['test_prop'] <= 0.7, f"test_prop expected between 0.1 and 0.7! found\n  --> {config['test_prop']}"
