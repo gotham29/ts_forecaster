@@ -149,7 +149,7 @@ def get_model_best(modnames_scores, eval_metric):
     # Get best model
     best_metric, best_mod = np.inf, None
     for mod_name, current_metric in modnames_scores.items():
-        if comp(current_metric, best_metric) #current_metric vs best_metric:
+        if comp(current_metric, best_metric): #current_metric vs best_metric:
             best_metric = current_metric
             best_mod = mod_name
             print(f"  {best_metric} <-- {best_mod}")
