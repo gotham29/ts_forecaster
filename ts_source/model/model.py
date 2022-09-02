@@ -44,6 +44,15 @@ MODNAMES_MODELS = {
     'LightGBMModel':LightGBMModel,
 }
 
+MODNAMES_LAGPARAMS = {
+    'VARIMA':'p',
+    'RNNModel':'input_chunk_length',
+    'NBEATSModel':'input_chunk_length',
+    'TCNModel':'input_chunk_length',
+    'TransformerModel':'input_chunk_length',
+    'LightGBMModel':'lags',
+}
+
 
 def train_models(data_dict:dict, modnames_grids: dict, config: dict):
     print(f'Training {len(modnames_grids)} models...')
@@ -68,62 +77,63 @@ def train_models(data_dict:dict, modnames_grids: dict, config: dict):
     return modnames_models, modnames_params, modnames_scores
 
 
-def get_loss(preds, df_test, time_col, loss_metric):
-    actuals = TimeSeries.from_dataframe(df_test, time_col=time_col)
-    loss = METRICNAMES_METRICS[loss_metric](actual_series=actuals, pred_series=preds)
-    return loss
+def get_eval(preds, df, time_col, eval_metric):
+    actuals = TimeSeries.from_dataframe(df, time_col=time_col)
+    eval_metric = METRICNAMES_METRICS[eval_metric](actual_series=actuals, pred_series=preds)
+    return eval_metric
 
 
-def get_modnames_preds(modnames_models, df, time_col, forecast_horizon):
+def get_model_lag(mod_name, model):
+    lag_param = MODNAMES_LAGPARAMS[mod_name]
+    return model.model_params[lag_param]
+
+
+def get_modnames_preds(modnames_models, df, time_col, forecast_horizon, LAG_MIN=3):
+    print('Getting modnames_preds...')
     modnames_preds = {}
-    series = TimeSeries.from_dataframe(df, time_col=time_col)
+    # Get rolling preds
     for mod_name, model in modnames_models.items():
-        modnames_preds[mod_name] = model.predict(n=forecast_horizon, series=series) #.predict(len(df_test))
+        LAG = max(LAG_MIN, get_model_lag(mod_name, model))
+        n_features = len(model.training_series.components)
+        preds = []
+        for _ in range(df.shape[0]):
+            if _ < LAG:
+                continue
+            df_lag = df[_-LAG:_]
+            ts = TimeSeries.from_dataframe(df_lag, time_col=time_col) #df_row
+            pred = model.predict(n=forecast_horizon, series=ts)
+            preds.append(pred.data_array().values.reshape(n_features))
+        modnames_preds[mod_name] = preds
+    print('  --> done')
     return modnames_preds
 
 
-def get_modnames_losses(modnames_preds, df, time_col, loss_metric):
+def get_modnames_evals(modnames_preds, df, time_col, eval_metric):
+    print('Getting modnames_losses...')
     modnames_losses = {}
     for mod_name, preds in modnames_preds.items():
-        modnames_losses[mod_name] = get_loss(preds, df, time_col, loss_metric)
+        modnames_losses[mod_name] = get_eval(preds, df, time_col, eval_metric)
+    print('  --> done')
     return modnames_losses
-
-
-# def test_models(modnames_models, df_test, time_col, loss_metric, forecast_horizon):
-#     print(f"\nTesting {len(modnames_models)} models on df_test:{df_test.shape}...")
-#     # Get models predictions
-
-#     # modnames_preds = {}
-#     # series = TimeSeries.from_dataframe(df_test, time_col=time_col)
-#     # for mod_name, model in modnames_models.items():
-#     #     modnames_preds[mod_name] = model.predict(n=forecast_horizon, series=[series], past_covariates=None, future_covariates=None) #.predict(len(df_test))
-#     modnames_preds = get_modnames_preds(modnames_models, df_test, time_col, forecast_horizon)
-
-#     # Scores predictions vs true
-#     # modnames_losses = {}
-#     # for mod_name, preds in modnames_preds.items():
-#     #     modnames_losses[mod_name] = get_loss(preds, df_test, time_col, loss_metric)
-#     modnames_losses = get_modnames_losses(modnames_preds, df_test, time_col, loss_metric)
-#     return modnames_losses
 
 
 def gridsearch_model(model, mod_name, mod_grid, data_t0, forecast_horizon, loss_metric, time_col=None, verbose=True):
     model_best = model.gridsearch(parameters=mod_grid,
-                                    series=data_t0,  #TimeSeries.from_dataframe(df=data_t0, time_col=time_col),
+                                    series=data_t0,  #darts.TimeSeries
                                     forecast_horizon=forecast_horizon,
                                     verbose=verbose,
                                     metric=METRICNAMES_METRICS[loss_metric])
     return model_best
 
 
-def get_model_best(modnames_scores):
+def get_model_best(modnames_scores, vs=<):
     print("Getting best model...")
-    best_loss, best_mod = np.inf, None
-    for mod_name, loss_metric in modnames_scores.items():
-        if loss_metric < best_loss:
-            best_loss = loss_metric
+    best_metric, best_mod = np.inf, None
+    for mod_name, current_metric in modnames_scores.items():
+        if current_metric vs best_metric:
+            best_metric = current_metric
             best_mod = mod_name
-            print(f"  {best_loss} <-- {best_mod}")
+            print(f"  {best_metric} <-- {best_mod}")
     print(f"    *{best_mod}*")
     return best_mod
 

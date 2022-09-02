@@ -3,6 +3,7 @@ import os
 import pickle
 import pandas as pd
 import yaml
+from darts.models.forecasting.forecasting_model import ForecastingModel
 
 
 def get_args():
@@ -180,31 +181,42 @@ def validate_config(config, data):
 def load_models(dir_models):
     """
     Purpose:
-        Load pkl models for each feature from dir
+        Load pkl models from dir
     Inputs:
         dir_models
             type: str
             meaning: path to dir where pkl models are loaded from
     Outputs:
-        features_models
+        modnames_models
             type: dict
-            meaning: model obj for each feature
+            meaning: model objs for each modname
     """
     pkl_files = [f for f in os.listdir(dir_models) if '.pkl' in f]
     print(f"Loading {len(pkl_files)} models...")
-    features_models = {}
+    modnames_models = {}
     for f in pkl_files:
         pkl_path = os.path.join(dir_models, f)
-        model = load_pickle_object_as_data(pkl_path)
-        features_models[f.replace('.pkl', '')] = model
-    return features_models
+        model = ForecastingModel.load(pkl_path)  ## load_pickle_object_as_data(pkl_path)
+        modnames_models[f.replace('.pkl', '')] = model
+    return modnames_models
 
 
 def save_models(modnames_models, dir_out):
+    """
+    Purpose:
+        Save pkl models to dir
+    Inputs:
+        dir_out
+            type: str
+            meaning: path to dir where pkl models are saved to
+        modnames_models
+            type: dict
+            meaning: model objs for each modname
+    """
     print(f'Saving {len(modnames_models)} models...')
     for modname, model in modnames_models.items():
         path_out = os.path.join(dir_out, f"{modname}.pkl")
-        save_data_as_pickle(model, path_out)
+        model.save(path_out)  ## save_data_as_pickle(model, path_out)
 
 
 def load_pickle_object_as_data(file_path):
