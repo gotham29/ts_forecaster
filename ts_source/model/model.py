@@ -158,12 +158,15 @@ def get_model_best(modnames_scores, eval_metric):
     return best_mod
 
 
-def save_results(modnames_params: dict, modnames_scores: dict, dir_out: str, name: str):
-    results = {'name': [], 'params':[], 'score':[]}
+def save_results(modnames_params: dict, modnames_scores: dict, dir_out: str, name: str, eval_metric:str):
+    results = {'name': [], 'params':[], 'eval':[]}
     for mod_name, mod_params in modnames_params.items():
         results['name'].append(mod_name)
         results['params'].append(mod_params)
-        results['score'].append(modnames_scores[mod_name])
-    results = pd.DataFrame(results).sort_values(by='score', ascending=True)
+        results['eval'].append(modnames_scores[mod_name])
+    ascending = True
+    if EVALS_COMPARES[eval_metric] == operator.gt:
+        ascending = False
+    results = pd.DataFrame(results).sort_values(by='eval', ascending=ascending)
     path_out = os.path.join(dir_out, f'{name}.csv')
     results.to_csv(path_out, index=False)

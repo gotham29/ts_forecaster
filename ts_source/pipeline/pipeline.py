@@ -21,8 +21,8 @@ def run_pipeline(config, data=False, modname_best=None):
         modnames_preds                                              = get_modnames_preds(modnames_models, data_dict['t1'], config['time_col'], config['forecast_horizon'])
         modnames_evals_test                                         = get_modnames_evals(modnames_preds, data_dict['t1'], config['time_col'], config['eval_metric'])
         modname_best                                                = get_model_best(modnames_evals_test, config['eval_metric'])
-        save_results(modnames_params, modnames_evals_train, config['dirs']['results_out'], 'train')
-        save_results(modnames_params, modnames_evals_test, config['dirs']['results_out'], 'test')
+        save_results(modnames_params, modnames_evals_train, config['dirs']['results_out'], 'train', config['eval_metric'])
+        save_results(modnames_params, modnames_evals_test, config['dirs']['results_out'], 'test', config['eval_metric'])
     else: # inference mode, test on 100%
         modnames_models                                             = load_models(config['dirs']['models_out'])
         modnames_preds                                              = get_modnames_preds(modnames_models, data_dict['t0t1'], config['time_col'], config['forecast_horizon'])
