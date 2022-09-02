@@ -5,7 +5,7 @@ import pandas as pd
 _SOURCE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..')
 sys.path.append(_SOURCE_DIR)
 
-from ts_source.model.model import train_models, get_model_best, get_modnames_preds, get_modnames_evals, save_results, EVALS_BETTER
+from ts_source.model.model import train_models, get_model_best, get_modnames_preds, get_modnames_evals, save_results
 from ts_source.preprocess.preprocess import split_data
 from ts_source.utils.utils import get_args, load_config, validate_config, save_data, load_models, save_models
 
