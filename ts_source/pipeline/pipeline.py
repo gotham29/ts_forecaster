@@ -19,7 +19,7 @@ def run_pipeline(config: dict, output_dir: str, data=False, data_path=False, mod
     save_data(data_dict, config['dirs']['data'])
     if config['train_models']: # training mode, infer on test_prop%
         modnames_models, modnames_params, modnames_evals_train      = train_save_models(data_dict, config['modnames_grids'], config['dirs']['models'], config['time_col'], config['eval_metric'], config['forecast_horizon'])
-        save_models(modnames_models, config['dirs']['models'])
+        # save_models(modnames_models, config['dirs']['models'])
         modnames_preds                                              = get_modnames_preds(modnames_models, data_dict['t1'], config['time_col'], config['forecast_horizon'])
         modnames_evals_test                                         = get_modnames_evals(modnames_preds, data_dict['t1'], config['time_col'], config['eval_metric'])
         modname_best                                                = get_model_best(modnames_evals_test, config['eval_metric'])
