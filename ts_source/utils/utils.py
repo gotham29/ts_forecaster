@@ -4,7 +4,7 @@ import pickle
 import pandas as pd
 import yaml
 from darts.models.forecasting.forecasting_model import ForecastingModel
-from darts.models.forecasting.regression_model import RegressionModel
+from darts.models.forecasting.torch_forecasting_model import TorchForecastingModel
 
 
 def get_args():
@@ -199,13 +199,27 @@ def load_models(dir_models):
             type: dict
             meaning: model objs for each modname
     """
+    modnames_objtypes = {
+        'RNNModel': TorchForecastingModel,
+        'TransformerModel': TorchForecastingModel,
+        'NBEATSModel': TorchForecastingModel,
+        'TCNModel': TorchForecastingModel,
+        'VARIMA': ForecastingModel,
+        'LightGBMModel': ForecastingModel,
+    }
+
     pkl_files = [f for f in os.listdir(dir_models) if '.pkl' in f]
-    print(f"Loading {len(pkl_files)} models...")
+    uniques = list(set([pf.split('.')[0] for pf in pkl_files]))
+
+    print(f"Loading {len(uniques)} models...")
     modnames_models = {}
-    for f in pkl_files:
-        pkl_path = os.path.join(dir_models, f)
-        model = ForecastingModel.load(pkl_path)  ## load_pickle_object_as_data(pkl_path)
-        modnames_models[f.replace('.pkl', '')] = model
+    for uni in uniques:  #for f in pkl_files:
+        print(f"  {uni}")
+        pkl_path = os.path.join(dir_models, f"{uni}.pkl")
+        model = modnames_objtypes[uni].load(pkl_path)
+        modnames_models[uni.replace('.pkl', '')] = model
+        print(f"    model = {model}")
+
     return modnames_models
 
 
