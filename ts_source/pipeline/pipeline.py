@@ -7,13 +7,47 @@ sys.path.append(_SOURCE_DIR)
 
 from ts_source.model.model import train_save_models, get_model_best, get_modnames_preds, get_modnames_evals, save_results
 from ts_source.preprocess.preprocess import split_data
-from ts_source.utils.utils import get_args, load_config, validate_config, save_data, load_models
+from ts_source.utils.utils import get_args, load_config, validate_config, save_data, load_models, make_dir
 
 
-def run_pipeline(config: dict, output_dir: str, data=False, data_path=False, modname_best=None):
-    assert not ( isinstance(data, bool) and isinstance(data_path, bool) ), f"run_pipeline needs either 'data'(pd.DataFrame) or 'data_path'(csv)"
-    if isinstance(data, bool):
-        data                                                        = pd.read_csv(data_path)
+def validate_args(config, data_path, output_dir, data, output_dirs):
+
+    # Check which args are found
+    found_data = (not isinstance(data, bool))
+    found_datapath = (not isinstance(data_path, bool))
+    found_outputdir = (not isinstance(output_dir, bool))
+    found_outputdirs = (output_dirs != {})
+
+    # Ensure 1 of 'data_path' or 'data' is found
+    assert sum([found_data, found_datapath]) == 1, "just 1 of 'data' or 'data_path' should be passed"
+    if found_datapath:
+        # Ensure 'data_path' exists and is csv
+        assert os.path.exists(data_path), f"'data_path' not found!\n --> {data_path}"
+        file_type = data_path.split('.')[-1]
+        assert file_type == 'csv', f"'data_path' expected .csv\n  found --> {file_type}"
+        data = pd.read_csv(data_path)
+    else:
+        # Ensure 'data' is pd.DataFrame
+        assert isinstance(data, pd.DataFrame), f"'data' expected pd.DataFrame\n  found --> {type(data)}"
+
+    # Ensure 1 of 'output_dir' or 'output_dirs' is found
+    assert sum([found_outputdir, found_outputdirs]) == 1, "just 1 of 'output_dir' or 'output_dirs' should be passed"
+    if found_outputdir:
+        # Ensure output_dir exists
+        make_dir(output_dir)
+    else:
+        # Ensure dir_names are valid and dirs exist
+        dirnames_valid, dirnames_invalid = ['data_out', 'models', 'results', 'scalers'],[]
+        for dir_name, dir_ in output_dirs.items():
+            dirnames_invalid.append(dir_name) if dir_name not in dirnames_valid
+            make_dir(dir_)
+        assert len(dirnames_invalid) == 0, f"invalid dir_names found in 'output_dirs'!\n  found --> {dirnames_invalid}\n  valid --> {dirnames_valid}"
+
+    return data
+
+
+def run_pipeline(config: dict, data_path=False, output_dir=False, data=False, output_dirs=False, modname_best=None):
+    data                                                            = validate_args(config, data_path, output_dir, data, output_dirs)
     config                                                          = validate_config(config, data, output_dir)
     data_dict                                                       = split_data(data, config['data_cap'], config['time_col'], config['features'], config['test_prop'])
     save_data(data_dict, config['dirs']['data'])
@@ -33,5 +67,9 @@ def run_pipeline(config: dict, output_dir: str, data=False, data_path=False, mod
 
 if __name__ == '__main__':
     config                                              = load_config(get_args().config_path)
-    modnames_models, modname_best, modnames_preds       = run_pipeline(config, data_path=get_args().data_path, output_dir=get_args().output_dir)
+    modnames_models, modname_best, modnames_preds       = run_pipeline(config,
+                                                                        data_path=get_args().data_path,
+                                                                        output_dir=get_args().output_dir,
+                                                                        data=False,
+                                                                        output_dirs=False)
     print('\n  DONE')
