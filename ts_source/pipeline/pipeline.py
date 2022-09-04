@@ -16,7 +16,7 @@ def validate_args(config, data_path, output_dir, data, output_dirs):
     found_data = (not isinstance(data, bool))
     found_datapath = (not isinstance(data_path, bool))
     found_outputdir = (not isinstance(output_dir, bool))
-    found_outputdirs = (output_dirs != {})
+    found_outputdirs = (not output_dirs == {})
 
     # Ensure 1 of 'data_path' or 'data' is found
     assert sum([found_data, found_datapath]) == 1, "just 1 of 'data' or 'data_path' should be passed"
@@ -50,7 +50,7 @@ def validate_args(config, data_path, output_dir, data, output_dirs):
 def run_pipeline(config: dict, data_path=False, output_dir=False, data=False, output_dirs=False, modname_best=None):
     data                                                            = validate_args(config, data_path, output_dir, data, output_dirs)
     config                                                          = validate_config(config, data, output_dir, output_dirs)
-    data_dict                                                       = split_data(data, config['data_cap'], config['time_col'], config['features'], config['test_prop'])
+    data_dict                                                       = split_data(data, config['data_cap'], config['time_col'], config['features'], config['test_prop'], config['train_models'])
     save_data(data_dict, config['dirs']['data'])
     if config['train_models']: # training mode, infer on test_prop%
         modnames_models, modnames_params, modnames_evals_train      = train_save_models(data_dict, config['modnames_grids'], config['dirs']['models'], config['time_col'], config['eval_metric'], config['forecast_horizon'])

@@ -1,9 +1,12 @@
 import pandas as pd
 
-def split_data(data, data_cap: int, time_col: str, features_inout: dict, test_prop: float):
+def split_data(data, data_cap: int, time_col: str, features_inout: dict, test_prop: float, train_models: bool):
     data = data[:data_cap]
     train_prop = 1-test_prop
-    print(f'Spltting data Time0 / Time1 by {int(train_prop*100)} / {int(test_prop*100)}...')
+    train_split, test_split = int(train_prop*100), int(test_prop*100)
+    if not train_models:
+        train_split, test_split = 0, 100
+    print(f'Spltting data Time0 / Time1 by {train_split} / {test_split}...')
     t0_endrow = int(data.shape[0]*train_prop)
     features_all = list(set(features_inout['in']+features_inout['pred']))
     if time_col:
