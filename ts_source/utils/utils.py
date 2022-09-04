@@ -65,7 +65,7 @@ def save_data_as_pickle(data_struct, f_path):
     return True
 
 
-def validate_config(config, data, output_dir):
+def validate_config(config, data, output_dir, output_dirs):
     print('\nValidating Config...')
     # Ensure expected keys present and correct type
     keys_dtypes = {
@@ -92,13 +92,16 @@ def validate_config(config, data, output_dir):
     assert len(keys_wrongdtypes) == 0, "  wrong data types"
 
     # Ensure paths exist
-    outdirs = ['data', 'models', 'results']
-    config['dirs'] = {}
-    make_dir(output_dir)
-    for od in outdirs:
-        od_path = os.path.join(output_dir, od)
-        config['dirs'][od] = od_path
-        make_dir(od_path)
+    if output_dir:
+        outdirs = ['data', 'models', 'results']
+        config['dirs'] = {}
+        make_dir(output_dir)
+        for od in outdirs:
+            od_path = os.path.join(output_dir, od)
+            config['dirs'][od] = od_path
+            make_dir(od_path)
+    else:
+        config['dirs'] = output_dirs
 
     # Ensure test prop between 0.1 and 0.7
     assert 0.1 <= config['test_prop'] <= 0.7, f"test_prop expected between 0.1 and 0.7! found\n  --> {config['test_prop']}"

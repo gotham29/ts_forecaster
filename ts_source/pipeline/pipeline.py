@@ -49,7 +49,7 @@ def validate_args(config, data_path, output_dir, data, output_dirs):
 
 def run_pipeline(config: dict, data_path=False, output_dir=False, data=False, output_dirs=False, modname_best=None):
     data                                                            = validate_args(config, data_path, output_dir, data, output_dirs)
-    config                                                          = validate_config(config, data, output_dir)
+    config                                                          = validate_config(config, data, output_dir, output_dirs)
     data_dict                                                       = split_data(data, config['data_cap'], config['time_col'], config['features'], config['test_prop'])
     save_data(data_dict, config['dirs']['data'])
     if config['train_models']: # training mode, infer on test_prop%
