@@ -39,7 +39,8 @@ def validate_args(config, data_path, output_dir, data, output_dirs):
         # Ensure dir_names are valid and dirs exist
         dirnames_valid, dirnames_invalid = ['data_out', 'models', 'results', 'scalers'],[]
         for dir_name, dir_ in output_dirs.items():
-            dirnames_invalid.append(dir_name) if dir_name not in dirnames_valid
+            if dir_name not in dirnames_valid:
+                dirnames_invalid.append(dir_name)
             make_dir(dir_)
         assert len(dirnames_invalid) == 0, f"invalid dir_names found in 'output_dirs'!\n  found --> {dirnames_invalid}\n  valid --> {dirnames_valid}"
 
