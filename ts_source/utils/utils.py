@@ -7,6 +7,10 @@ from darts.models.forecasting.forecasting_model import ForecastingModel
 from darts.models.forecasting.torch_forecasting_model import TorchForecastingModel
 
 
+MODNAMES_KNOWN = ['VARIMA', 'NBEATSModel', 'TCNModel',
+                    'TransformerModel', 'RNNModel', 'LightGBMModel']
+
+
 def get_args():
     parser = argparse.ArgumentParser(description=__doc__,
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -151,13 +155,11 @@ def validate_config(config, data, output_dir, output_dirs):
     assert len(features_nonunique) == 0, f"features with < {min_unique} unique values found!\n  --> {features_nonunique}"
 
     # Ensure modnames are known
-    modnames_known = ['VARIMA', 'NBEATSModel', 'TCNModel',
-                        'TransformerModel', 'RNNModel', 'LightGBMModel']
     modnames_unknown = []
     for modname in config['modnames_grids']:
-        if modname not in modnames_known:
+        if modname not in MODNAMES_KNOWN:
             modnames_unknown.append(modname)
-    assert len(modnames_unknown) == 0, f"unknown models found!\n  --> {modnames_unknown}"
+    assert len(modnames_unknown) == 0, f"unknown models found!\n  --> {modnames_unknown}\n  known --> {MODNAMES_KNOWN}"
 
     # Add missing keys to modnames_grids
     total_length = data[:config['data_cap']].shape[0]

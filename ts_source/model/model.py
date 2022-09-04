@@ -89,7 +89,7 @@ def train_save_models(data_dict:dict, modnames_grids: dict, dir_models: str, tim
         modnames_scores[mod_name] = score
         path_out = os.path.join(dir_models, f"{mod_name}.pkl")
         modnames_models[mod_name].save(path_out)
-        print(f"    params = {params}; score = {score}")
+        print(f"    params = {params}\n    score = {score}")
     return modnames_models, modnames_params, modnames_scores
 
 
