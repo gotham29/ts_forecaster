@@ -11,12 +11,21 @@ from ts_source.utils.utils import get_args, load_config, validate_config, save_d
 
 
 def validate_args(config, data_path, output_dir, data, output_dirs):
-
+    print("Validating args...")
     # Check which args are found
     found_data = (not isinstance(data, bool))
     found_datapath = (not isinstance(data_path, bool))
     found_outputdir = (not isinstance(output_dir, bool))
-    found_outputdirs = (output_dirs != {})
+    found_outputdirs = (not isinstance(output_dirs, bool))
+
+    print(f"  data = {data}")
+    print(f"    found = {found_data}")
+    print(f"  data_path = {data_path}")
+    print(f"    found = {found_datapath}")
+    print(f"  output_dir = {output_dir}")
+    print(f"    found = {found_outputdir}")
+    print(f"  output_dirs = {output_dirs}")
+    print(f"    found = {found_outputdirs}")
 
     # Ensure 1 of 'data_path' or 'data' is found
     assert sum([found_data, found_datapath]) == 1, "just 1 of 'data' or 'data_path' should be passed"
