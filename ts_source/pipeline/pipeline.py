@@ -16,7 +16,7 @@ def validate_args(config, data_path, output_dir, data, output_dirs):
     found_data = (not isinstance(data, bool))
     found_datapath = (not isinstance(data_path, bool))
     found_outputdir = (not isinstance(output_dir, bool))
-    found_outputdirs = (not output_dirs == {})
+    found_outputdirs = (output_dirs != {})
 
     # Ensure 1 of 'data_path' or 'data' is found
     assert sum([found_data, found_datapath]) == 1, "just 1 of 'data' or 'data_path' should be passed"
