@@ -4,6 +4,7 @@ import time
 import operator
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
 from darts import TimeSeries
 from darts.metrics import (
     mape,
@@ -137,13 +138,29 @@ def get_modnames_preds(modnames_models, df, time_col, forecast_horizon, LAG_MIN=
     return modnames_preds
 
 
-def get_modnames_evals(modnames_preds, df_true, time_col, eval_metric):
+def plot_predtrue(preds, df_true, mod_name, dir_out):
+    xs = [_ for _ in range(preds.shape[0])]
+    for pcol in preds:
+        path_out = os.path.join(dir_out, f"{mod_name}--{pcol}")
+        plt.plot(xs, preds[pcol], label='pred')
+        plt.plot(xs, df_true[pcol], label='true')
+        plt.xlabel('time step')
+        plt.ylabel(f'{pcol}')
+        plt.title(f"Pred vs True -- {pcol}")
+        plt.legend()
+        plt.savefig(path_out)
+
+
+def get_modnames_evals(modnames_preds, df_true, time_col, eval_metric, dir_out):
     print('Getting modnames_evals...')
     modnames_evals = {}
     for mod_name, preds in modnames_preds.items():
         ts_pred = TimeSeries.from_dataframe(preds, time_col=time_col)
         ts_true = TimeSeries.from_dataframe(df_true.tail(len(preds)), time_col=time_col)
+        # Eval pred vs true
         modnames_evals[mod_name] = get_eval(ts_pred, ts_true, time_col, eval_metric)
+        # Plot pred vs true
+        plot_predtrue(preds, df_true, mod_name, dir_out)
     print('  --> done')
     return modnames_evals
 
