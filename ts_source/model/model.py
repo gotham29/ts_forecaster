@@ -104,6 +104,18 @@ def get_model_lag(mod_name, model):
     return model.model_params[lag_param]
 
 
+def get_preds_rolling(model, df, features, LAG, time_col, forecast_horizon):
+    preds = []
+    for _ in range(df.shape[0]):
+        if _ < LAG:
+            continue
+        df_lag = df[_-LAG:_]
+        ts = TimeSeries.from_dataframe(df_lag, time_col=time_col) #df_row
+        pred = model.predict(n=forecast_horizon, series=ts)
+        preds.append(pred.data_array().values.reshape( len(features) ))
+    return preds
+
+
 def get_modnames_preds(modnames_models, df, time_col, forecast_horizon, LAG_MIN=3):
     print('Getting modnames_preds...')
     modnames_preds = {}
@@ -111,14 +123,9 @@ def get_modnames_preds(modnames_models, df, time_col, forecast_horizon, LAG_MIN=
     for mod_name, model in modnames_models.items():
         LAG = max(LAG_MIN, get_model_lag(mod_name, model))
         features = model.training_series.components
-        preds = []
-        for _ in range(df.shape[0]):
-            if _ < LAG:
-                continue
-            df_lag = df[_-LAG:_]
-            ts = TimeSeries.from_dataframe(df_lag, time_col=time_col) #df_row
-            pred = model.predict(n=forecast_horizon, series=ts)
-            preds.append(pred.data_array().values.reshape( len(features) ))
+
+        preds = get_preds_rolling(model, df, features, LAG, time_col, forecast_horizon)
+
         df_preds = pd.DataFrame(preds, columns=features)
         time_vals = df[time_col].values[-df_preds.shape[0]:]
         df_preds.insert(0, time_col, time_vals)
