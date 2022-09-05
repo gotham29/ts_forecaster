@@ -122,9 +122,10 @@ def get_modnames_preds(modnames_models, df, time_col, forecast_horizon, LAG_MIN=
     modnames_preds = {}
     # Get preds -- rolling forward in time
     for mod_name, model in modnames_models.items():
+        features = list(model.training_series.components)
         preds = get_preds_rolling(model=model,
                                     df=df,
-                                    features=model.training_series.components,
+                                    features=features,
                                     LAG=max(LAG_MIN, get_model_lag(mod_name, model)),
                                     time_col=time_col,
                                     forecast_horizon=forecast_horizon)
