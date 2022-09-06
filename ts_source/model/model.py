@@ -17,7 +17,6 @@ from darts.metrics import (
     r2_score,
     dtw_metric)
 from darts.utils.statistics import check_seasonality, plot_acf, plot_residuals_analysis, plot_hist
-from darts.models.filtering.kalman_filter import KalmanFilter
 from darts.models import (
     VARIMA,
     NBEATSModel,
@@ -25,6 +24,7 @@ from darts.models import (
     TransformerModel,
     RNNModel,
     LightGBMModel,
+    KalmanForecaster
 )
 
 METRICNAMES_METRICS = {
@@ -46,7 +46,7 @@ MODNAMES_MODELS = {
     'TCNModel':TCNModel,
     'TransformerModel':TransformerModel,
     'LightGBMModel':LightGBMModel,
-    'KalmanFilter':KalmanFilter
+    'KalmanForecaster':KalmanForecaster
 }
 
 MODNAMES_LAGPARAMS = {
@@ -56,7 +56,7 @@ MODNAMES_LAGPARAMS = {
     'TCNModel':'input_chunk_length',
     'TransformerModel':'input_chunk_length',
     'LightGBMModel':'lags',
-    'KalmanFilter':'dim_x',
+    'KalmanForecaster':'dim_x',
 }
 
 EVALS_COMPARES = {
