@@ -106,16 +106,13 @@ def train_save_models(data_dict:dict, do_gridsearch: bool, modnames_grids: dict,
             type: dict
             meaning: keys are model types, values are eval metric scores
     """
-    print(f'Training {len(modnames_grids)} models...')
+    print(f'Training {len(modnames_grids)} models; GridSearch = {do_gridsearch}')
     # Convert df to darts timeseries
     darts_timeseries = TimeSeries.from_dataframe(df=data_dict['t0'], time_col=time_col)
     # Train all models
     modnames_models, modnames_params, modnames_scores = {}, {}, {}
     for mod_name, mod_grid in modnames_grids.items():
         print(f"  mod_name = {mod_name}")
-        model_untrained = MODNAMES_MODELS[mod_name]
-        params = model_untrained.model_params
-        score = 0 ### no score since no gridsearch
         if do_gridsearch:
             model_untrained, params, score = gridsearch_model(model=MODNAMES_MODELS[mod_name],
                                                                 mod_name=mod_name,
@@ -125,6 +122,10 @@ def train_save_models(data_dict:dict, do_gridsearch: bool, modnames_grids: dict,
                                                                 forecast_horizon=forecast_horizon,
                                                                 time_col=time_col,
                                                                 verbose=False)
+        else:
+            params = slim_paramgrid(mod_grid)
+            model_untrained = MODNAMES_MODELS[mod_name](**params)
+            score = 0 ### no score since no gridsearch
         modnames_models[mod_name] = model_untrained.fit(series=darts_timeseries)
         modnames_params[mod_name] = params
         modnames_scores[mod_name] = score
@@ -132,6 +133,30 @@ def train_save_models(data_dict:dict, do_gridsearch: bool, modnames_grids: dict,
         modnames_models[mod_name].save(path_out)
         print(f"    params = {params}\n    score = {score}")
     return modnames_models, modnames_params, modnames_scores
+
+
+def slim_paramgrid(mod_grid, ind_select=0):
+    """
+    Purpose:
+        Get 1 param set from mod_grid to init model (instead of gridsearch)
+    Inputs:
+        mod_grid:
+            type: dict
+            meaning: gridsearch grid from config['modnames_grids']
+        ind_select:
+            type: int (default=0)
+            meaning: index of param list item to choose for slim
+    Outputs:
+        mg_slimmed:
+            type: dict
+            meaning: param grid slimmed from mod_grid -- ready to init model
+    """
+    mg_slimmed = {k:None for k in mod_grid}
+    for param, val in mod_grid.items():
+        if isinstance(val, list):
+            val = val[ind_select]
+        mg_slimmed[param] = val
+    return mg_slimmed
 
 
 def get_eval(ts_pred, ts_true, time_col, eval_metric):

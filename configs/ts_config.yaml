@@ -37,15 +37,15 @@ modnames_grids:
       # }
     # likelihood: str = None,
     #   = ['quantile', 'poisson']
-  # VARIMA:
-  #   p:
-  #     - 3
-  #     - 6
-  #   d:
-  #     - 0
-  #   q:
-  #     - 3
-  #   # trend: 'c' ['', '', '']
+  VARIMA:
+    p:
+      - 3
+      - 6
+    d:
+      - 0
+    q:
+      - 3
+    # trend: 'c' ['', '', '']
   NBEATSModel:
     # output_chunk_length: int,
     input_chunk_length:
