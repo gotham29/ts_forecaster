@@ -1,5 +1,6 @@
 import os
 import pandas as pd
+from darts import TimeSeries
 
 def split_data(data, data_cap: int, time_col: str, features_inout: dict, test_prop: float, train_models: bool):
     """
