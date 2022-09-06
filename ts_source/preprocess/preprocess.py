@@ -52,7 +52,11 @@ def split_data(data, data_cap: int, time_col: str, features_inout: dict, test_pr
     return dict_data
 
 
-def check_stationarity(df, time_col, output_dir):
+def check_stationarity(df, time_col, output_dir,
+                        tests_nulls = {'ADFULLER': '(null=stationary)',
+                                        'KPSS': '(null=stationary)'},
+                        tests_functions = {'ADFULLER':stationarity_test_adf,
+                                            'KPSS':stationarity_test_kpss}):
     """
     Purpose:
         Check stationarity for all pred features
@@ -70,16 +74,19 @@ def check_stationarity(df, time_col, output_dir):
         n/a (csv saved)
     """
     path_out = os.path.join(output_dir,'stationary_tests.csv')
-    tests_functions = {'adfuller':stationarity_test_adf,
-                        'kpss':stationarity_test_kpss}
+    # tests_nulls = {'adfuller': 'Null = stationary',
+    #                     'kpss': 'Null = stationary'}
+    # tests_functions = {'adfuller':stationarity_test_adf,
+    #                     'kpss':stationarity_test_kpss}
     cols_pvals = {c:None for c in df if c != time_col}
-    tests_colpvals = {t:cols_pvals for t in tests_functions}
-    for test, cols_pvals in tests_colpvals.items():
+    tests_colspvals = {t:cols_pvals for t in tests_functions}
+    for test, cols_pvals in tests_colspvals.items():
         for col, pvaldict in cols_pvals.items():
             ts = TimeSeries.from_dataframe(df[[col, time_col]], time_col=time_col)
             is_stat = tests_functions[test](ts=ts)
             p_val = is_stat[1]
-            tests_colpvals[test][col] = f"p={p_val}"
-    df_tests_colpvals = pd.DataFrame(tests_colpvals)
-    df_tests_colpvals.to_csv(path_out)
+            tests_colspvals[test][col] = f"p={p_val}"
+    tests_colspvals = {f"{test}\n  {tests_nulls[test]}": cols_pvals for test, cols_pvals in tests_colspvals.items()}
+    df_tests_colspvals = pd.DataFrame(tests_colspvals)
+    df_tests_colspvals.to_csv(path_out)
 
