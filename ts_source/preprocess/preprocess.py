@@ -2,6 +2,8 @@ import os
 import pandas as pd
 from darts import TimeSeries
 
+from darts.utils.statistics import stationarity_tests, stationarity_test_adf, stationarity_test_kpss
+
 def split_data(data, data_cap: int, time_col: str, features_inout: dict, test_prop: float, train_models: bool):
     """
     Purpose:
@@ -50,7 +52,7 @@ def split_data(data, data_cap: int, time_col: str, features_inout: dict, test_pr
     return dict_data
 
 
-def check_stationarity(df, time_col, output_dir, p_vals=[0.01, 0.05, 0.10]):
+def check_stationarity(df, time_col, output_dir):
     """
     Purpose:
         Check stationarity for all pred features
@@ -64,19 +66,22 @@ def check_stationarity(df, time_col, output_dir, p_vals=[0.01, 0.05, 0.10]):
         output_dir:
             type: str
             meaning: dir to save outputs too
-        p_vals:
-            type: list of floats
-            meaning: p_value thresholds
     Outputs:
         n/a (csv saved)
     """
     path_out = os.path.join(output_dir,'stationary_tests.csv')
-    df_dict = {c:{f"p={p}":None for p in p_vals} for c in df if c != time_col}
-    for col, pvaldict in df_dict.items():
-        for p in p_vals:
+    tests_functions = {'adfuller':stationarity_test_adf,
+                        'kpss':stationarity_test_kpss}
+    cols_pvals = {c:None for c in df if c != time_col}
+    tests_colpvals = {t:cols_pvals for t in tests_functions}
+    for test, cols_pvals in tests_colpvals.items():
+        for col, pvaldict in cols_pvals.items():
             ts = TimeSeries.from_dataframe(df[[col, time_col]], time_col=time_col)
-            is_stationary = stationarity_tests(ts, p_value_threshold_adfuller=p, p_value_threshold_kpss=p)
-            df_dict[col][f"p={p}"] = is_stationary
-    df = pd.DataFrame(df_dict)
-    df.to_csv(path_out)
+            is_stat = tests_functions[test](ts=ts)
+            p_val = is_stat[1]
+            for p in p_vals:
+                p_val = is_stat[1]
+                tests_colpvals[test][col] = f"p={p_val}"
+    df_tests_colpvals = pd.DataFrame(tests_colpvals)
+    df_tests_colpvals.to_csv(path_out)
 
