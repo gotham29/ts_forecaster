@@ -46,3 +46,35 @@ def split_data(data, data_cap: int, time_col: str, features_inout: dict, test_pr
         for dname, d in dict_data.items():
             print(f"  {dname} = {d.shape}")
     return dict_data
+
+
+def check_stationarity(df, time_col, output_dir, p_vals=[0.01, 0.05, 0.10]):
+    """
+    Purpose:
+        Check stationarity for all pred features
+    Inputs:
+        df:
+            type: pd.DataFrame
+            meaning: data to check stationary on
+        time_col:
+            type: str
+            meaning: name of timestamp column
+        output_dir:
+            type: str
+            meaning: dir to save outputs too
+        p_vals:
+            type: list of floats
+            meaning: p_value thresholds
+    Outputs:
+        n/a (csv saved)
+    """
+    path_out = os.path.join(output_dir,'stationary_tests.csv')
+    df_dict = {c:{f"p={p}":None for p in p_vals} for c in df if c != time_col}
+    for col, pvaldict in df_dict.items():
+        for p in p_vals:
+            ts = TimeSeries.from_dataframe(df[[col, time_col]], time_col=time_col)
+            is_stationary = stationarity_tests(ts, p_value_threshold_adfuller=p, p_value_threshold_kpss=p)
+            df_dict[col][f"p={p}"] = is_stationary
+    df = pd.DataFrame(df_dict)
+    df.to_csv(path_out)
+
