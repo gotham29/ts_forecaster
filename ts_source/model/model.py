@@ -259,7 +259,7 @@ def get_modnames_preds(modnames_models, df, time_col, forecast_horizon, LAG_MIN=
     return modnames_preds
 
 
-def plot_predtrue(pred, true, mod_name, output_dir):
+def plot_predtrue(pred, true, mod_name, time_col, output_dir):
     """
     Purpose:
         Plot pred vs true values for each model type and pred feature
@@ -281,6 +281,10 @@ def plot_predtrue(pred, true, mod_name, output_dir):
     """
     xs = [_ for _ in range(pred.shape[0])]
     for pcol in pred:
+        if pcol == time_col:
+            continue
+        print(f"\n{pcol}")
+        plt.cla()
         path_out = os.path.join(output_dir, f"{mod_name}--{pcol}")
         plt.plot(xs, pred[pcol], label='pred')
         plt.plot(xs, true[pcol], label='true')
@@ -319,12 +323,12 @@ def get_modnames_evals(modnames_preds, true, time_col, eval_metric, output_dir):
     print('Getting modnames_evals...')
     modnames_evals = {}
     for mod_name, preds in modnames_preds.items():
-        ts_pred = TimeSeries.from_dataframe(pred, time_col=time_col)
+        ts_pred = TimeSeries.from_dataframe(preds, time_col=time_col)
         ts_true = TimeSeries.from_dataframe(true.tail(len(preds)), time_col=time_col)
         # Eval pred vs true
         modnames_evals[mod_name] = get_eval(ts_pred, ts_true, time_col, eval_metric)
         # Plot pred vs true
-        plot_predtrue(pred, true.tail(len(pred)), mod_name, output_dir)
+        plot_predtrue(preds, true.tail(len(preds)), mod_name, time_col, output_dir)
     print('  --> done')
     return modnames_evals
 

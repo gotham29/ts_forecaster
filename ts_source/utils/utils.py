@@ -354,3 +354,69 @@ def save_data(data_dict, output_dir):
     for dname, data in data_dict.items():
         path_out = os.path.join(output_dir, f"{dname}.csv")
         data.to_csv(path_out)
+
+
+def validate_args(config: dict, data_path, output_dir, data, output_dirs):
+    """
+    Purpose:
+        Ensure validity of args passed to 'run_pipeline'
+    Inputs:
+        config:
+            type: dict
+            meaning: yaml dict with configuration for pipeline run
+        data:
+            type: bool or pd.DataFrame
+            meaning: data to run if df, if bool data will be loaded from 'data_path' arg
+        data_path:
+            type: bool or str
+            meaning: path to load data from if str, if bool data comes from 'data' arg
+        output_dir:
+            type: bool or str
+            meaning: dir to save outputs too if str, if bool out dirs come from 'output_dirs' arg
+        output_dirs:
+            type: dict or str
+            meaning: dict with output sub-dirs ('data', 'models' & 'results'), if bool out dirs made within 'output_dir' arg
+    Outputs:
+        data:
+            type: pd.DataFrame
+            meaning: data to run through pipeline
+    """
+    print("Validating args...")
+    # Check which args are found
+    found_data = (not isinstance(data, bool))
+    found_datapath = (not isinstance(data_path, bool))
+    found_outputdir = (not isinstance(output_dir, bool))
+    found_outputdirs = (not isinstance(output_dirs, bool))
+    print(f"  data = {data}")
+    print(f"    found = {found_data}")
+    print(f"  data_path = {data_path}")
+    print(f"    found = {found_datapath}")
+    print(f"  output_dir = {output_dir}")
+    print(f"    found = {found_outputdir}")
+    print(f"  output_dirs = {output_dirs}")
+    print(f"    found = {found_outputdirs}")
+    # Ensure 1 of 'data_path' or 'data' is found
+    assert sum([found_data, found_datapath]) == 1, "just 1 of 'data' or 'data_path' should be passed"
+    if found_datapath:
+        # Ensure 'data_path' exists and is csv
+        assert os.path.exists(data_path), f"'data_path' not found!\n --> {data_path}"
+        file_type = data_path.split('.')[-1]
+        assert file_type == 'csv', f"'data_path' expected .csv\n  found --> {file_type}"
+        data = pd.read_csv(data_path)
+    else:
+        # Ensure 'data' is pd.DataFrame
+        assert isinstance(data, pd.DataFrame), f"'data' expected pd.DataFrame\n  found --> {type(data)}"
+    # Ensure 1 of 'output_dir' or 'output_dirs' is found
+    assert sum([found_outputdir, found_outputdirs]) == 1, "just 1 of 'output_dir' or 'output_dirs' should be passed"
+    if found_outputdir:
+        # Ensure output_dir exists
+        make_dir(output_dir)
+    else:
+        # Ensure dir_names are valid and dirs exist
+        dirnames_valid, dirnames_invalid = ['data', 'models', 'results', 'scalers'],[]
+        for dir_name, dir_ in output_dirs.items():
+            if dir_name not in dirnames_valid:
+                dirnames_invalid.append(dir_name)
+            make_dir(dir_)
+        assert len(dirnames_invalid) == 0, f"invalid dir_names found in 'output_dirs'!\n  found --> {dirnames_invalid}\n  valid --> {dirnames_valid}"
+    return data
