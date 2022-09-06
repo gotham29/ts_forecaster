@@ -1,4 +1,4 @@
-train_models: True
+train_models: False
 do_gridsearch: False
 test_prop: 0.3
 data_cap: 100
@@ -88,49 +88,49 @@ modnames_grids:
       - 0.4
     # num_layers: int,
     # dropout_fn,
-  TransformerModel:
-    # output_chunk_length: int,
-    input_chunk_length:
-      - 5
-      - 10
-    d_model:
-      - 64
-    nhead:
-      - 2
-      # - 4
-    num_encoder_layers:
-      - 2
-      # - 3
-    num_decoder_layers:
-      - 2
-      # - 3
-    dim_feedforward:
-      - 512
-    dropout:
-      - 0.1
-      # - 0.2
-    activation:
-      - "relu"  ## ["relu", "gelu"]
-    # custom_encoder: Optional[nn.Module] = None,
-    # custom_decoder: Optional[nn.Module] = None,
-  RNNModel:
-    # input_chunk_length: int,
-    input_chunk_length:
-      - 5
-      - 10
-    training_length:
-      # - 5
-      - 10
-    model: ## ["RNN", "LSTM", "GRU"]
-      # - RNN
-      - LSTM
-    hidden_dim:
-      # - 10
-      - 25
-    n_rnn_layers:
-      - 1
-      # - 2
-    dropout:
-      # - 0.0
-      - 0.2
+  # TransformerModel:
+  #   # output_chunk_length: int,
+  #   input_chunk_length:
+  #     - 5
+  #     - 10
+  #   d_model:
+  #     - 64
+  #   nhead:
+  #     - 2
+  #     # - 4
+  #   num_encoder_layers:
+  #     - 2
+  #     # - 3
+  #   num_decoder_layers:
+  #     - 2
+  #     # - 3
+  #   dim_feedforward:
+  #     - 512
+  #   dropout:
+  #     - 0.1
+  #     # - 0.2
+  #   activation:
+  #     - "relu"  ## ["relu", "gelu"]
+  #   # custom_encoder: Optional[nn.Module] = None,
+  #   # custom_decoder: Optional[nn.Module] = None,
+  # RNNModel:
+  #   # input_chunk_length: int,
+  #   input_chunk_length:
+  #     - 5
+  #     - 10
+  #   training_length:
+  #     # - 5
+  #     - 10
+  #   model: ## ["RNN", "LSTM", "GRU"]
+  #     # - RNN
+  #     - LSTM
+  #   hidden_dim:
+  #     # - 10
+  #     - 25
+  #   n_rnn_layers:
+  #     - 1
+  #     # - 2
+  #   dropout:
+  #     # - 0.0
+  #     - 0.2
 

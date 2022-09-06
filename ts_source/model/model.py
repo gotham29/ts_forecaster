@@ -315,7 +315,6 @@ def plot_predtrue(pred, true, mod_name, time_col, output_dir):
     for pcol in pred:
         if pcol == time_col:
             continue
-        print(f"\n{pcol}")
         plt.cla()
         path_out = os.path.join(output_dir, f"{mod_name}--{pcol}")
         plt.plot(xs, pred[pcol], label='pred')
