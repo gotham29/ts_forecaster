@@ -8,7 +8,8 @@ from darts.models.forecasting.torch_forecasting_model import TorchForecastingMod
 
 
 MODNAMES_KNOWN = ['VARIMA', 'NBEATSModel', 'TCNModel',
-                    'TransformerModel', 'RNNModel', 'LightGBMModel']
+                    'TransformerModel', 'RNNModel', 'LightGBMModel',
+                    'KalmanFilter']
 
 
 def get_args():
@@ -246,6 +247,9 @@ def validate_config(config, data, output_dir, output_dirs):
             'output_chunk_length': [ config['forecast_horizon'] ]  #test_length
             },
         'LightGBMModel': {
+            'output_chunk_length': [ config['forecast_horizon'] ]  #test_length
+            },
+        'KalmanFilter': {
             'output_chunk_length': [ config['forecast_horizon'] ]  #test_length
             },
         # 'RNNModel': {
