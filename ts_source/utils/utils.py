@@ -249,9 +249,9 @@ def validate_config(config, data, output_dir, output_dirs):
         'LightGBMModel': {
             'output_chunk_length': [ config['forecast_horizon'] ]  #test_length
             },
-        'KalmanForecaster': {
-            'output_chunk_length': [ config['forecast_horizon'] ]  #test_length
-            },
+        # 'KalmanForecaster': {
+        #     'output_chunk_length': [ config['forecast_horizon'] ]  #test_length
+        #     },
         # 'RNNModel': {
         #     'training_length': [ train_length ]
         #     },
