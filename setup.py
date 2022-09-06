@@ -39,7 +39,7 @@ author_email = "sheiser1@binghamton.edu"
 
 setup(
     name='ts_source',
-    version='0.0.999999999992',
+    version='0.0.9999999999923',
     description='Timeseries Forecaster - Rapid ML prototyping tool for models forecasting on numeric time series',
     long_description=readme,
     license='MIT',

@@ -1,6 +1,33 @@
 import pandas as pd
 
 def split_data(data, data_cap: int, time_col: str, features_inout: dict, test_prop: float, train_models: bool):
+    """
+    Purpose:
+        Split data to x/y, t0/t1
+    Inputs:
+        data:
+            type: pd.DataFrame
+            meaning: data to split to x/y, t0/t1
+        data_cap:
+            type: int
+            meaning: max number of data rows to use (first n)
+        time_col:
+            type: str
+            meaning: name of timestamp column
+        features_inout:
+            type: dict
+            meaning: keys are feature types ('in' and 'pred') values are feature lists
+        test_prop:
+            type: float
+            meaning: proportion of data for test split
+        train_models:
+            type: bool
+            meaning: whether to train models
+    Outputs:
+        dict_data:
+            type: dict
+            meaning: keys are data names, values are pd.DataFrames
+    """
     data = data[:data_cap]
     train_prop = 1-test_prop
     train_split, test_split = int(train_prop*100), int(test_prop*100)

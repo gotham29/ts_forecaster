@@ -12,6 +12,24 @@ MODNAMES_KNOWN = ['VARIMA', 'NBEATSModel', 'TCNModel',
 
 
 def get_args():
+    """
+    Purpose:
+        Get args from command line call
+    Inputs:
+        -cp:
+            type: str
+            meaning: path to config (yaml)
+        -dp:
+            type: str
+            meaning: path to data path (csv)
+        -od:
+            type: str
+            meaning: dir to save outputs to
+    Outputs:
+        parser.parse_args()
+            type: parser
+            meaning: container for -cp, -dp and -od
+    """
     parser = argparse.ArgumentParser(description=__doc__,
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('-cp', '--config_path', required=True,
@@ -24,11 +42,36 @@ def get_args():
 
 
 def make_dir(mydir):
+    """
+    Purpose:
+        Make dir if doesn't already exist
+    Inputs:
+        mydir:
+            type: str
+            meaning: dir to make
+    Outputs:
+        n/a (dir made)
+    """
     if not os.path.exists(mydir):
         os.mkdir(mydir)
 
 
 def get_dirfiles(dir_root, files_types=None):
+    """
+    Purpose:
+        Get all paths within 'dir_root' of type in 'files_types'
+    Inputs:
+        dir_root:
+            type: str
+            meaning: dir to find paths in
+        files_types:
+            type: list
+            meaning: file types to find in 'dir_root'
+    Outputs:
+        subfiles:
+            type: list
+            meaning: list of paths in 'dir_root' of type in 'files_types'
+    """
     subfiles = []
     for path, subdirs, files in os.walk(dir_root):
         for name in files:
@@ -44,11 +87,11 @@ def load_config(yaml_path):
     Purpose:
         Load config from path
     Inputs:
-        yaml_path
+        yaml_path:
             type: str
             meaning: .yaml path to load from
     Outputs:
-        cfg
+        cfg:
             type: dict
             meaning: config (yaml) -- loaded
     """
@@ -59,17 +102,44 @@ def load_config(yaml_path):
 
 def save_data_as_pickle(data_struct, f_path):
     """
-    Saves a dictionary as pickle object to f_path
-    :param data_struct: Data object (dict/list) you want to save
-    :param f_path: File path
-    :return: True flag
+    Purpose:
+        Save data in pkl format
+    Inputs:
+        data_struct:
+            type: anythin pickle-able (dict/list)
+            meaning: data to be saved as pkl
+        f_path:
+            type: str
+            meaning: path to save data to
+    Outputs:
+        n/a (pkl data saved)
     """
     with open(f_path, 'wb') as handle:
         pickle.dump(data_struct, handle)
-    return True
 
 
 def validate_config(config, data, output_dir, output_dirs):
+    """
+    Purpose:
+        Ensure validity of all config values
+    Inputs:
+        config:
+            type: dict
+            meaning: yaml dict with configuration for pipeline run to validate
+        data:
+            type: bool or pd.DataFrame
+            meaning: data to run if df, if bool data will be loaded from 'data_path' arg
+        output_dir:
+            type: bool or str
+            meaning: dir to save outputs too if str, if bool out dirs come from 'output_dirs' arg
+        output_dirs:
+            type: dict or str
+            meaning: dict with output sub-dirs ('data', 'models' & 'results'), if bool out dirs made within 'output_dir' arg
+    Outputs:
+        config:
+            type: dict
+            meaning: validated yaml dict
+    """
     print('\nValidating Config...')
     # Ensure expected keys present and correct type
     keys_dtypes = {
@@ -196,11 +266,11 @@ def load_models(dir_models):
     Purpose:
         Load pkl models from dir
     Inputs:
-        dir_models
+        dir_models:
             type: str
             meaning: path to dir where pkl models are loaded from
     Outputs:
-        modnames_models
+        modnames_models:
             type: dict
             meaning: model objs for each modname
     """
@@ -233,12 +303,14 @@ def save_models(modnames_models, dir_out):
     Purpose:
         Save pkl models to dir
     Inputs:
-        dir_out
+        dir_out:
             type: str
             meaning: path to dir where pkl models are saved to
-        modnames_models
+        modnames_models:
             type: dict
             meaning: model objs for each modname
+    Outputs:
+        n/a (models saved)
     """
     print(f'Saving {len(modnames_models)} models...')
     for modname, model in modnames_models.items():
@@ -251,11 +323,11 @@ def load_pickle_object_as_data(file_path):
     Purpose:
         Load data from pkl file
     Inputs:
-        file_path
+        file_path:
             type: str
             meaning: path to pkl file
     Outputs:
-        data
+        data:
             type: pkl
             meaning: pkl data loaded
     """
@@ -264,10 +336,21 @@ def load_pickle_object_as_data(file_path):
     return data
 
 
-def save_data(data_dict, dir_out):
-    print(f'Saving prepped data...\n  to --> {dir_out}')
+def save_data(data_dict, output_dir):
+    """
+    Purpose:
+        Save all data from 'data_dict' to 'dir_out'
+    Inputs:
+        data_dict:
+            type: dict
+            meaning: keys are data names ('x_t0', 'y_t0', 'x_t1', 'y_t1', 't0', 't1'), values are pd.DataFrames
+        output_dir:
+            type: str
+            meaning: dir to save csvs too
+    Outputs:
+        n/a (csv data saved)
+    """
+    print(f'Saving prepped data...\n  to --> {output_dir}')
     for dname, data in data_dict.items():
-        path_out = os.path.join(dir_out, f"{dname}.csv")
+        path_out = os.path.join(output_dir, f"{dname}.csv")
         data.to_csv(path_out)
-
-
