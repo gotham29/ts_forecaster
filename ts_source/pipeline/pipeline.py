@@ -71,6 +71,8 @@ def run_pipeline(config: dict, data_path=False, output_dir=False, data=False, ou
     else: # inference mode, infer on 100%
         modnames_models                                             = load_models(config['dirs']['models'])
         modnames_preds                                              = get_modnames_preds(modnames_models, data_dict['t0t1'], config['time_col'], config['forecast_horizon'])
+        modnames_evals_test                                         = get_modnames_evals(modnames_preds, data_dict['t0t1'], config['time_col'], config['eval_metric'], config['dirs']['results'])
+        modname_best                                                = get_model_best(modnames_evals_test, config['eval_metric'])
     save_data(modnames_preds, config['dirs']['results'])
     return modnames_models, modname_best, modnames_preds
 

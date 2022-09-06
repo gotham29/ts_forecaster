@@ -160,7 +160,7 @@ def get_modnames_evals(modnames_preds, df_true, time_col, eval_metric, dir_out):
         # Eval pred vs true
         modnames_evals[mod_name] = get_eval(ts_pred, ts_true, time_col, eval_metric)
         # Plot pred vs true
-        plot_predtrue(preds, df_true, mod_name, dir_out)
+        plot_predtrue(preds, df_true.tail(len(preds)), mod_name, dir_out)
     print('  --> done')
     return modnames_evals
 
