@@ -79,9 +79,7 @@ def check_stationarity(df, time_col, output_dir):
             ts = TimeSeries.from_dataframe(df[[col, time_col]], time_col=time_col)
             is_stat = tests_functions[test](ts=ts)
             p_val = is_stat[1]
-            for p in p_vals:
-                p_val = is_stat[1]
-                tests_colpvals[test][col] = f"p={p_val}"
+            tests_colpvals[test][col] = f"p={p_val}"
     df_tests_colpvals = pd.DataFrame(tests_colpvals)
     df_tests_colpvals.to_csv(path_out)
 
