@@ -1,4 +1,4 @@
-train_models: False
+train_models: True
 test_prop: 0.3
 data_cap: 100
 forecast_horizon: 1
