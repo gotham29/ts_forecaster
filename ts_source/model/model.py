@@ -24,7 +24,6 @@ from darts.models import (
     TransformerModel,
     RNNModel,
     LightGBMModel,
-    KalmanForecaster
 )
 
 METRICNAMES_METRICS = {
@@ -45,8 +44,7 @@ MODNAMES_MODELS = {
     'NBEATSModel':NBEATSModel,
     'TCNModel':TCNModel,
     'TransformerModel':TransformerModel,
-    'LightGBMModel':LightGBMModel,
-    'KalmanForecaster':KalmanForecaster
+    'LightGBMModel':LightGBMModel
 }
 
 MODNAMES_LAGPARAMS = {
@@ -55,8 +53,7 @@ MODNAMES_LAGPARAMS = {
     'NBEATSModel':'input_chunk_length',
     'TCNModel':'input_chunk_length',
     'TransformerModel':'input_chunk_length',
-    'LightGBMModel':'lags',
-    'KalmanForecaster':'dim_x',
+    'LightGBMModel':'lags'
 }
 
 EVALS_COMPARES = {
@@ -72,7 +69,7 @@ EVALS_COMPARES = {
 }
 
 
-def train_save_models(data_dict:dict, modnames_grids: dict, dir_models: str, time_col: str, eval_metric: str, forecast_horizon: int):
+def train_save_models(data_dict:dict, do_gridsearch: bool, modnames_grids: dict, dir_models: str, time_col: str, eval_metric: str, forecast_horizon: int):
     """
     Purpose:
         Train and save all models found in config['modnames_grids']
@@ -80,6 +77,9 @@ def train_save_models(data_dict:dict, modnames_grids: dict, dir_models: str, tim
         data_dict:
             type: dict
             meaning: keys are data names ('x_t0', 'y_t0', 'x_t1', 'y_t1', 't0', 't1'), values are pd.DataFrames
+        do_gridsearch:
+            type: float
+            meaning: whether to gridsearch for best params or use defaults
         modnames_grids:
             type: dict
             meaning: keys are model types, values are params grids to gridsearch
@@ -113,14 +113,18 @@ def train_save_models(data_dict:dict, modnames_grids: dict, dir_models: str, tim
     modnames_models, modnames_params, modnames_scores = {}, {}, {}
     for mod_name, mod_grid in modnames_grids.items():
         print(f"  mod_name = {mod_name}")
-        model_untrained, params, score = gridsearch_model(model=MODNAMES_MODELS[mod_name],
-                                                            mod_name=mod_name,
-                                                            mod_grid=mod_grid,
-                                                            data_t0=darts_timeseries,
-                                                            eval_metric=eval_metric,
-                                                            forecast_horizon=forecast_horizon,
-                                                            time_col=time_col,
-                                                            verbose=False)
+        model_untrained = MODNAMES_MODELS[mod_name]
+        params = model_untrained.model_params
+        score = 0 ### no score since no gridsearch
+        if do_gridsearch:
+            model_untrained, params, score = gridsearch_model(model=MODNAMES_MODELS[mod_name],
+                                                                mod_name=mod_name,
+                                                                mod_grid=mod_grid,
+                                                                data_t0=darts_timeseries,
+                                                                eval_metric=eval_metric,
+                                                                forecast_horizon=forecast_horizon,
+                                                                time_col=time_col,
+                                                                verbose=False)
         modnames_models[mod_name] = model_untrained.fit(series=darts_timeseries)
         modnames_params[mod_name] = params
         modnames_scores[mod_name] = score

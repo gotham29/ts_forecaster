@@ -9,7 +9,7 @@ from darts.models.forecasting.torch_forecasting_model import TorchForecastingMod
 
 MODNAMES_KNOWN = ['VARIMA', 'NBEATSModel', 'TCNModel',
                     'TransformerModel', 'RNNModel', 'LightGBMModel',
-                    'KalmanForecaster']
+                ]
 
 
 def get_args():
@@ -151,7 +151,8 @@ def validate_config(config, data, output_dir, output_dirs):
         'forecast_horizon': int,
         'eval_metric': str,
         'time_col': str,
-        'train_models': bool
+        'train_models': bool,
+        'do_gridsearch': bool
     }
     keys_missing = []
     keys_wrongdtypes = {}
@@ -249,9 +250,6 @@ def validate_config(config, data, output_dir, output_dirs):
         'LightGBMModel': {
             'output_chunk_length': [ config['forecast_horizon'] ]  #test_length
             },
-        # 'KalmanForecaster': {
-        #     'output_chunk_length': [ config['forecast_horizon'] ]  #test_length
-        #     },
         # 'RNNModel': {
         #     'training_length': [ train_length ]
         #     },
