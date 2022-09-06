@@ -36,7 +36,7 @@ modnames_grids:
       # }
     # likelihood: str = None,
     #   = ['quantile', 'poisson']
-    KalmanFilter:
+  KalmanFilter:
     dim_x:
       - 1
       - 3

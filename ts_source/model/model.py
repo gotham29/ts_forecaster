@@ -376,12 +376,12 @@ def gridsearch_model(model, mod_name, mod_grid, data_t0, forecast_horizon, eval_
             type: float
             meaning: eval score for best model
     """
-    model_best_untrained, best_params, score = model.gridsearch(parameters=mod_grid,
-                                                                series=data_t0,
-                                                                forecast_horizon=forecast_horizon,
-                                                                verbose=verbose,
-                                                                metric=METRICNAMES_METRICS[eval_metric])
-    return model_best_untrained, best_params, score
+    model_best_untrained, best_params, best_score = model.gridsearch(parameters=mod_grid,
+                                                                        series=data_t0,
+                                                                        forecast_horizon=forecast_horizon,
+                                                                        verbose=verbose,
+                                                                        metric=METRICNAMES_METRICS[eval_metric])
+    return model_best_untrained, best_params, best_score
 
 
 def get_model_best(modnames_scores, eval_metric):
