@@ -285,7 +285,7 @@ def load_models(dir_models):
         'LightGBMModel': ForecastingModel,
     }
 
-    pkl_files = get_dir_files(dir_, ftype='pkl', search='walk')  #[f for f in os.listdir(dir_models) if '.pkl' in f]
+    pkl_files = get_dir_files(dir_=dir_models, ftype='pkl', search='walk')  #[f for f in os.listdir(dir_models) if '.pkl' in f]
     uniques = list(set([pf.split('.')[0] for pf in pkl_files]))
 
     print(f"Loading {len(uniques)} models...")

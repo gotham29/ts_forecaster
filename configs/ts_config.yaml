@@ -1,4 +1,4 @@
-train_models: True
+train_models: False
 do_gridsearch: False
 test_prop: 0.3
 data_cap: 100
@@ -88,6 +88,8 @@ modnames_grids:
       - 0.4
     # num_layers: int,
     # dropout_fn,
+
+
   # TransformerModel:
   #   # output_chunk_length: int,
   #   input_chunk_length:
