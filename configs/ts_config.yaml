@@ -1,4 +1,4 @@
-train_models: False
+train_models: True
 do_gridsearch: False
 test_prop: 0.3
 data_cap: 100

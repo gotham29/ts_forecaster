@@ -11,6 +11,15 @@ MODNAMES_KNOWN = ['VARIMA', 'NBEATSModel', 'TCNModel',
                     'TransformerModel', 'RNNModel', 'LightGBMModel',
                 ]
 
+MODNAMES_OBJTYPES = {
+    'RNNModel': TorchForecastingModel,
+    'TransformerModel': TorchForecastingModel,
+    'NBEATSModel': TorchForecastingModel,
+    'TCNModel': TorchForecastingModel,
+    'VARIMA': ForecastingModel,
+    'LightGBMModel': ForecastingModel,
+}
+
 
 def get_args():
     """
@@ -276,24 +285,16 @@ def load_models(dir_models):
             type: dict
             meaning: model objs for each modname
     """
-    modnames_objtypes = {
-        'RNNModel': TorchForecastingModel,
-        'TransformerModel': TorchForecastingModel,
-        'NBEATSModel': TorchForecastingModel,
-        'TCNModel': TorchForecastingModel,
-        'VARIMA': ForecastingModel,
-        'LightGBMModel': ForecastingModel,
-    }
 
     pkl_files = get_dir_files(dir_=dir_models, ftype='pkl', search='simple')  #[f for f in os.listdir(dir_models) if '.pkl' in f]
-    uniques = list(set([pf.split('.')[0] for pf in pkl_files]))
+    unique_pklnames = list(set([pf.split('.')[0] for pf in pkl_files]))
 
-    print(f"Loading {len(uniques)} models...")
+    print(f"Loading {len(unique_pklnames)} models...")
     modnames_models = {}
-    for uni in uniques:  #for f in pkl_files:
+    for uni in unique_pklnames:  #for f in pkl_files:
         print(f"  {uni}")
         pkl_path = os.path.join(dir_models, f"{uni}.pkl")
-        model = modnames_objtypes[uni].load(pkl_path)
+        model = MODNAMES_OBJTYPES[uni].load(pkl_path)
         modnames_models[uni.replace('.pkl', '')] = model
         print(f"    model = {model}")
 
@@ -424,15 +425,19 @@ def validate_args(config: dict, data_path, output_dir, data, output_dirs):
     return data
 
 
-def get_dir_files(dir_, ftype='pkl', search='walk'):
+def get_dir_data(dir_:str, ftype:str='pkl', search:str='walk', rtype:str='filename'):
+    files, paths = [], []
     if search == 'walk':
-        paths = []
         for pw in os.walk(dir_):
-            pkls = [f for f in pw[-1] if ftype in f]
-            if len(pkls) == 0:
+            ftypes = [f for f in pw[-1] if ftype in f]
+            if len(ftypes) == 0:
                 continue
-            path_ = os.path.join(pw[0], pkls[0])
-            paths.append(path_)
+            files += ftypes
+            for ft in ftypes:
+                path_ = os.path.join(pw[0], ft)  #ftypes[0]
+                paths.append(path_)
     else:  # simple search
-        paths = [p for p in os.listdir(dir_) if ftype in p]
-    return paths
+        files = [p for p in os.listdir(dir_) if ftype in p]
+        paths = [os.path.join(dir_,f) for f in files]
+    data = files if rtype=='filename' else paths
+    return data
