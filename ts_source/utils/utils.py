@@ -286,7 +286,7 @@ def load_models(dir_models):
             meaning: model objs for each modname
     """
 
-    pkl_files = get_dir_files(dir_=dir_models, ftype='pkl', search='simple')  #[f for f in os.listdir(dir_models) if '.pkl' in f]
+    pkl_files = get_dir_data(dir_=dir_models, ftype='pkl', search='simple', rtype='filename')  #[f for f in os.listdir(dir_models) if '.pkl' in f]
     unique_pklnames = list(set([pf.split('.')[0] for pf in pkl_files]))
 
     print(f"Loading {len(unique_pklnames)} models...")
