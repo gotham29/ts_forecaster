@@ -285,7 +285,7 @@ def load_models(dir_models):
         'LightGBMModel': ForecastingModel,
     }
 
-    pkl_files = [f for f in os.listdir(dir_models) if '.pkl' in f]
+    pkl_files = get_dir_files(dir_, ftype='pkl', search='walk')  #[f for f in os.listdir(dir_models) if '.pkl' in f]
     uniques = list(set([pf.split('.')[0] for pf in pkl_files]))
 
     print(f"Loading {len(uniques)} models...")
@@ -422,3 +422,17 @@ def validate_args(config: dict, data_path, output_dir, data, output_dirs):
             make_dir(dir_)
         assert len(dirnames_invalid) == 0, f"invalid dir_names found in 'output_dirs'!\n  found --> {dirnames_invalid}\n  valid --> {dirnames_valid}"
     return data
+
+
+def get_dir_files(dir_, ftype='pkl', search='walk'):
+    if search == 'walk':
+        paths = []
+        for pw in os.walk(dir_):
+            pkls = [f for f in pw[-1] if ftype in f]
+            if len(pkls) == 0:
+                continue
+            path_ = os.path.join(pw[0], pkls[0])
+            paths.append(path_)
+    else:  # simple search
+        paths = [p for p in os.listdir(dir_) if ftype in p]
+    return paths
