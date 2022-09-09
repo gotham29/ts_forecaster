@@ -294,11 +294,17 @@ def load_models(dir_models):
     for uni in unique_pklnames:  #for f in pkl_files:
         print(f"  {uni}")
         pkl_path = os.path.join(dir_models, f"{uni}.pkl")
-        model = MODNAMES_OBJTYPES[uni].load(pkl_path)
+        model = load_darts(pkl_path, uni)
+        # model = MODNAMES_OBJTYPES[uni].load(pkl_path)
         modnames_models[uni.replace('.pkl', '')] = model
         print(f"    model = {model}")
 
     return modnames_models
+
+
+def load_darts(path_, darts_modeltype):
+    model = MODNAMES_OBJTYPES[darts_modeltype].load(path_)
+    return model
 
 
 def save_models(modnames_models, dir_out):
