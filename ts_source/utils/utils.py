@@ -426,6 +426,24 @@ def validate_args(config: dict, data_path, output_dir, data, output_dirs):
 
 
 def get_dir_data(dir_:str, ftype:str='pkl', search:str='walk', rtype:str='filename'):
+    """
+    Purpose:
+        Gather all files of 'ftype' from 'dir_'
+    Inputs:
+        dir_:
+            type: str
+            meaning: directory to search for files
+        ftype:
+            type: str
+            meaning: file type to search for (default='pkl')
+        search:
+            type: str
+            meaning: how to search 'dir_', whether only 'dir_' itself ('simple') or including all sub-dirs ('walk') (default='walk')
+        rtype:
+            type: str
+            meaning: whether to return just the filename or the entire paths (default='filename')
+    Outputs:
+    """
     files, paths = [], []
     if search == 'walk':
         for pw in os.walk(dir_):
@@ -441,3 +459,22 @@ def get_dir_data(dir_:str, ftype:str='pkl', search:str='walk', rtype:str='filena
         paths = [os.path.join(dir_,f) for f in files]
     data = files if rtype=='filename' else paths
     return data
+
+
+def add_timecol(df, time_col):
+    """
+    Purpose:
+        Add timestamp column named 'time_col' to 'df'
+    Inputs:
+        df:
+            type: pd.DataFrame
+            meaning: df to add 'time_col' to
+    Outputs:
+        df:
+            type: pd.DataFrame
+            meaning: df with 'time_col' inserted
+    """
+    base = pd.Timestamp.today()
+    ts_vals = [base + dt.timedelta(days=_) for _ in range(df.shape[0])]
+    df.insert(0, time_col, ts_vals)
+    return df
