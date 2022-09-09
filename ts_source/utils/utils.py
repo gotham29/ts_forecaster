@@ -295,7 +295,6 @@ def load_models(dir_models):
         print(f"  {uni}")
         pkl_path = os.path.join(dir_models, f"{uni}.pkl")
         model = load_darts(pkl_path, uni)
-        # model = MODNAMES_OBJTYPES[uni].load(pkl_path)
         modnames_models[uni.replace('.pkl', '')] = model
         print(f"    model = {model}")
 
