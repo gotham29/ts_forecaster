@@ -273,7 +273,7 @@ def validate_config(config, data, output_dir, output_dirs):
     return config
 
 
-def load_models(dir_models):
+def load_models(dir_models, alg=False):
     """
     Purpose:
         Load pkl models from dir
@@ -295,7 +295,9 @@ def load_models(dir_models):
     for uni in unique_pklnames:  #for f in pkl_files:
         print(f"  {uni}")
         pkl_path = os.path.join(dir_models, f"{uni}.pkl")
-        model = load_darts(pkl_path, uni)
+        if alg:
+            darts_modeltype = alg
+        model = load_darts(pkl_path, darts_modeltype=darts_modeltype)
         modnames_models[uni.replace('.pkl', '')] = model
         print(f"    model = {model}")
 
