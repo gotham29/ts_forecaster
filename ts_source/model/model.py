@@ -479,3 +479,23 @@ def save_results(modnames_params: dict, modnames_scores: dict, output_dir: str, 
     results = pd.DataFrame(results).sort_values(by='eval', ascending=ascending)
     path_out = os.path.join(output_dir, f'{filename}.csv')
     results.to_csv(path_out, index=False)
+
+
+def get_modname(model):
+    """
+    Purpose:
+        Get name of model type from model
+    Inputs:
+        model:
+            type: darts.models obj
+            meaning: ML model
+    Outputs:
+        mod_name:
+            type: str
+            meaning: name of model type (i.e. 'VARIMA', 'LightGBMModel')
+    """
+    mod_name = None
+    for modname, mod in MODNAMES_MODELS.items():
+        if isinstance(model, mod):
+            mod_name = modname
+    return mod_name
