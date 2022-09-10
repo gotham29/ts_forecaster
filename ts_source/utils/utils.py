@@ -426,7 +426,7 @@ def validate_args(config: dict, data_path, output_dir, data, output_dirs):
         make_dir(output_dir)
     else:
         # Ensure dir_names are valid and dirs exist
-        dirnames_valid, dirnames_invalid = ['data', 'models', 'results'],[]
+        dirnames_valid, dirnames_invalid = ['data', 'models', 'results', 'scalers'],[]
         for dir_name, dir_ in output_dirs.items():
             if dir_name not in dirnames_valid:
                 dirnames_invalid.append(dir_name)

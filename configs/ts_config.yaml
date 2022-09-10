@@ -1,4 +1,4 @@
-train_models: True
+train_models: False
 do_gridsearch: False
 scale: minmax  #minmax, standard, robust, False
 test_prop: 0.3
