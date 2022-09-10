@@ -249,7 +249,7 @@ def get_preds_rolling(model, df, features, LAG, time_col, forecast_horizon):
     return np.array(preds)
 
 
-def get_modnames_preds(modnames_models, df, time_col, forecast_horizon, LAG_MIN=3, scaler):
+def get_modnames_preds(modnames_models, df, time_col, forecast_horizon, LAG_MIN, scaler):
     """
     Purpose:
         Get preds from all models in 'modnames_models' arg
