@@ -5,6 +5,7 @@ import operator
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+from ts_source.preprocess.preprocess import scale_data
 from darts import TimeSeries
 from darts.metrics import (
     mape,
@@ -248,7 +249,7 @@ def get_preds_rolling(model, df, features, LAG, time_col, forecast_horizon):
     return np.array(preds)
 
 
-def get_modnames_preds(modnames_models, df, time_col, forecast_horizon, LAG_MIN=3):
+def get_modnames_preds(modnames_models, df, time_col, forecast_horizon, LAG_MIN=3, scaler):
     """
     Purpose:
         Get preds from all models in 'modnames_models' arg
@@ -285,6 +286,9 @@ def get_modnames_preds(modnames_models, df, time_col, forecast_horizon, LAG_MIN=
                                     LAG=max(LAG_MIN, get_model_lag(mod_name, model)),
                                     time_col=time_col,
                                     forecast_horizon=forecast_horizon)
+
+        if scaler:
+            preds = scale_data(preds, features, scale_type=False, scaler=scaler, rescale=True)
         df_preds = pd.DataFrame(preds, columns=features)
         time_vals = df[time_col].values[-df_preds.shape[0]:]
         df_preds.insert(0, time_col, time_vals)

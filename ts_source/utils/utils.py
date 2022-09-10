@@ -162,6 +162,7 @@ def validate_config(config, data, output_dir, output_dirs):
         'eval_metric': str,
         'time_col': str,
         'train_models': bool,
+        'scale': bool,
         'do_gridsearch': bool
     }
     keys_missing = []
@@ -179,7 +180,7 @@ def validate_config(config, data, output_dir, output_dirs):
 
     # Ensure paths exist
     if output_dir:
-        outdirs = ['data', 'models', 'results']
+        outdirs = ['data', 'models', 'scalers', 'results']
         config['dirs'] = {}
         make_dir(output_dir)
         for od in outdirs:
@@ -188,6 +189,10 @@ def validate_config(config, data, output_dir, output_dirs):
             make_dir(od_path)
     else:
         config['dirs'] = output_dirs
+
+    # Ensure scale is valid
+    scale_valid = [False,  'minmax', 'standard', 'robust']
+    assert config['scale'] in scale_valid, f"scale expected one of {scale_valid}\n  found --> {config['scale']}"
 
     # Ensure test prop between 0.1 and 0.7
     assert 0.1 <= config['test_prop'] <= 0.7, f"test_prop expected between 0.1 and 0.7! found\n  --> {config['test_prop']}"

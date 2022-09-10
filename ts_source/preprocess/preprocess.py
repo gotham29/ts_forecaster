@@ -1,8 +1,18 @@
 import os
 import pandas as pd
 from darts import TimeSeries
-
+from darts.datasets import AirPassengersDataset
+from sklearn.preprocessing import MinMaxScaler, StandardScaler, RobustScaler
+from darts.dataprocessing.transformers import Scaler
 from darts.utils.statistics import stationarity_tests, stationarity_test_adf, stationarity_test_kpss
+
+
+SCALETYPES_SCALERS = {
+    'minmax': MinMaxScaler,
+    'robust': RobustScaler,
+    'standard': StandardScaler,
+    }
+
 
 def split_data(data, data_cap: int, time_col: str, features_inout: dict, test_prop: float, train_models: bool):
     """
@@ -41,7 +51,6 @@ def split_data(data, data_cap: int, time_col: str, features_inout: dict, test_pr
     features_all = list(set(features_inout['in']+features_inout['pred']))
     if time_col:
         features_all += [time_col]
-    # TODO: add time_col
     t0, t1 = data[:t0_endrow][features_all], data[t0_endrow:][features_all]
     x_t0, y_t0 = t0[features_inout['in']+[time_col]], t0[features_inout['pred']+[time_col]]
     x_t1, y_t1 = t1[features_inout['in']+[time_col]], t1[features_inout['pred']+[time_col]]
@@ -74,10 +83,6 @@ def check_stationarity(df, time_col, output_dir,
         n/a (csv saved)
     """
     path_out = os.path.join(output_dir,'stationary_tests.csv')
-    # tests_nulls = {'adfuller': 'Null = stationary',
-    #                     'kpss': 'Null = stationary'}
-    # tests_functions = {'adfuller':stationarity_test_adf,
-    #                     'kpss':stationarity_test_kpss}
     cols_pvals = {c:None for c in df if c != time_col}
     tests_colspvals = {t:cols_pvals for t in tests_functions}
     for test, cols_pvals in tests_colspvals.items():
@@ -90,3 +95,42 @@ def check_stationarity(df, time_col, output_dir,
     df_tests_colspvals = pd.DataFrame(tests_colspvals)
     df_tests_colspvals.to_csv(path_out)
 
+
+def scale_data(data, features, scale_type=False, scaler=False, rescale=False):
+    """
+    Purpose:
+        Scale/rescale data
+    Inputs:
+        data:
+            type: pd.DataFrame
+            meaning: data to to scaled/rescaled
+        features:
+            type: list
+            meaning: features to be scaled/rescaled
+        scaler:
+            type: sklearn.preprocessing OR bool
+            meaning: scaler function (if bool scaler is create from 'scale_type')
+        scale_type:
+            type: str
+            meaning: type of sklearn scaler to use (looked up in SCALETYPES_SCALERS)
+        rescale:
+            type: bool
+            meaning: rescale instead of scale (default=False)
+    Outputs:
+        data:
+            type: darts.TimeSeries
+            meaning: scaled/rescaled data
+        scaler:
+            type: sklearn.preprocessing
+            meaning: scaler function
+    """
+    data_ts = TimeSeries.from_dataframe(data[features])
+    if not scaler:
+        assert scale_type != False, "scale_type must be provided if scaler obj is not"
+        scaler = SCALETYPES_SCALERS[scale_type](feature_range=(-1, 1))
+    transformer = Scaler(scaler)
+    if rescale:
+        data_ = transformer.inverse_transform(data_ts)
+    else:  #scale
+        data_ = transformer.fit_transform(data_ts)
+    return data, scaler
