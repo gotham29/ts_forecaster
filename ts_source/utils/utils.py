@@ -291,21 +291,18 @@ def load_models(dir_models, alg=False):
             type: dict
             meaning: model objs for each modname
     """
-
     pkl_files = get_dir_data(dir_=dir_models, ftype='pkl', search='simple', rtype='filename')  #[f for f in os.listdir(dir_models) if '.pkl' in f]
     unique_pklnames = list(set([pf.split('.')[0] for pf in pkl_files]))
-
     print(f"Loading {len(unique_pklnames)} models...")
     modnames_models = {}
     for uni in unique_pklnames:  #for f in pkl_files:
         print(f"  {uni}")
         pkl_path = os.path.join(dir_models, f"{uni}.pkl")
         if alg:
-            darts_modeltype = alg
-        model = load_darts(pkl_path, darts_modeltype=darts_modeltype)
+            uni = alg
+        model = load_darts(pkl_path, darts_modeltype=uni)
         modnames_models[uni.replace('.pkl', '')] = model
         print(f"    model = {model}")
-
     return modnames_models
 
 
@@ -429,7 +426,7 @@ def validate_args(config: dict, data_path, output_dir, data, output_dirs):
         make_dir(output_dir)
     else:
         # Ensure dir_names are valid and dirs exist
-        dirnames_valid, dirnames_invalid = ['data', 'models', 'results', 'scalers'],[]
+        dirnames_valid, dirnames_invalid = ['data', 'models', 'results'],[]
         for dir_name, dir_ in output_dirs.items():
             if dir_name not in dirnames_valid:
                 dirnames_invalid.append(dir_name)

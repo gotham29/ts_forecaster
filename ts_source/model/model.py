@@ -250,11 +250,6 @@ def get_preds_rolling(model, df, features, LAG, time_col, forecast_horizon):
     return np.array(preds)
 
 
-# def reshape_datats(ts:darts.TimeSeries, shape:tuple):
-#     ts_ =  ts.reshape(shape)
-#     return ts_
-
-
 def get_modnames_preds(modnames_models, df, time_col, forecast_horizon, scaler, LAG_MIN=LAG_MIN):
     """
     Purpose:

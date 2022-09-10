@@ -2,9 +2,10 @@ import os
 import pandas as pd
 import darts
 from darts import TimeSeries
-from sklearn.preprocessing import MinMaxScaler, StandardScaler, RobustScaler
 from darts.dataprocessing.transformers import Scaler
 from darts.utils.statistics import stationarity_tests, stationarity_test_adf, stationarity_test_kpss
+from ts_source.utils.utils import save_data_as_pickle
+from sklearn.preprocessing import MinMaxScaler, StandardScaler, RobustScaler
 
 
 SCALETYPES_SCALERS = {
@@ -96,7 +97,7 @@ def check_stationarity(df, time_col, output_dir,
     df_tests_colspvals.to_csv(path_out)
 
 
-def scale_data(data, features, scale_type=False, scaler=False, rescale=False):
+def scale_data(data, features, scale_type=False, scaler=False, rescale=False):  #dir_save=False, dir_load=False,
     """
     Purpose:
         Scale/rescale data
@@ -128,20 +129,34 @@ def scale_data(data, features, scale_type=False, scaler=False, rescale=False):
     if not scaler:
         assert scale_type != False, "scale_type must be provided if scaler obj is not"
         scaler = SCALETYPES_SCALERS[scale_type](feature_range=(-1, 1))
-    transformer = Scaler(scaler)
+        scaler = Scaler(scaler)
     if rescale:
-        data_ = transformer.inverse_transform(data_ts)
+        data_ = scaler.inverse_transform(data_ts)
     else:  #scale
-        data_ = transformer.fit_transform(data_ts)
+        data_ = scaler.fit_transform(data_ts)
+    # if dir_save:
+    #     save_data_as_pickle(transformer, os.path.join(dir_save, 'scaler.pkl') )
     d_shape = data_.data_array().shape
     myshape = (d_shape[0], d_shape[1])
     data_ = pd.DataFrame( reshape_datats(data_, myshape) , columns=features)
     cols_toadd = [c for c in data if c not in data_]
     for _,c in enumerate(cols_toadd):
         data_.insert(loc=_, column=c, value=data[c].values)
-    return data_, transformer
+    return data_, scaler
 
 
 def reshape_datats(ts:darts.TimeSeries, shape:tuple):
+    """
+    Purpose:
+        Reshape data_array() in ts to 'shape'
+    Inputs:
+        ts:
+            type: darts.TimeSeries
+            meaning: data to reshape
+    Outputs:
+        ts_:
+            type: np.array
+            meaning: data reshaped
+    """
     ts_ =  ts.data_array().values.reshape(shape)
     return ts_
