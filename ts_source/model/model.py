@@ -1,11 +1,12 @@
 import os
 import sys
 import time
+import darts
 import operator
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-from ts_source.preprocess.preprocess import scale_data
+from ts_source.preprocess.preprocess import scale_data, reshape_datats
 from darts import TimeSeries
 from darts.metrics import (
     mape,
@@ -243,10 +244,15 @@ def get_preds_rolling(model, df, features, LAG, time_col, forecast_horizon):
         if _ < LAG:
             continue
         df_lag = df[_-LAG:_][ feats ]
-        ts = TimeSeries.from_dataframe(df_lag, time_col=time_col) #df_row
+        ts = TimeSeries.from_dataframe(df_lag, time_col=time_col)
         pred = model.predict(n=forecast_horizon, series=ts)
-        preds.append(pred.data_array().values.reshape( len(features) ))
+        preds.append( reshape_datats(ts=pred, shape=(len(features)) ) )  #pred.data_array().values.reshape( len(features) )
     return np.array(preds)
+
+
+# def reshape_datats(ts:darts.TimeSeries, shape:tuple):
+#     ts_ =  ts.reshape(shape)
+#     return ts_
 
 
 def get_modnames_preds(modnames_models, df, time_col, forecast_horizon, scaler, LAG_MIN=LAG_MIN):

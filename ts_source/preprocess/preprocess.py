@@ -1,7 +1,6 @@
 import os
 import pandas as pd
 from darts import TimeSeries
-from darts.datasets import AirPassengersDataset
 from sklearn.preprocessing import MinMaxScaler, StandardScaler, RobustScaler
 from darts.dataprocessing.transformers import Scaler
 from darts.utils.statistics import stationarity_tests, stationarity_test_adf, stationarity_test_kpss
@@ -133,5 +132,12 @@ def scale_data(data, features, scale_type=False, scaler=False, rescale=False):
         data_ = transformer.inverse_transform(data_ts)
     else:  #scale
         data_ = transformer.fit_transform(data_ts)
-    data_ = pd.DataFrame(data_.data_array().values, columns=features)
-    return data_, scaler
+    d_shape = data_.data_array().shape
+    myshape = (d_shape[0], d_shape[1])
+    data_ = pd.DataFrame( reshape_datats(data_, myshape) , columns=features)
+    return data_, transformer
+
+
+def reshape_datats(ts:darts.TimeSeries, shape:tuple):
+    ts_ =  ts.data_array().values.reshape(shape)
+    return ts_

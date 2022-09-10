@@ -52,7 +52,7 @@ def run_pipeline(
     data                                                            = validate_args(config, data_path, output_dir, data, output_dirs)
     config                                                          = validate_config(config, data, output_dir, output_dirs)
     if config['scale']:
-        data, scaler                                                = scale_data(data, config['features']['in'], config['scale'], rescale=False)
+        data, scaler                                                = scale_data(data, config['features']['in'], config['scale'], scaler=False, rescale=False)
     data_dict                                                       = split_data(data, config['data_cap'], config['time_col'], config['features'], config['test_prop'], config['train_models'])
     save_data(data_dict, config['dirs']['data'])
     check_stationarity(data_dict['t0t1'], config['time_col'], config['dirs']['data'])
