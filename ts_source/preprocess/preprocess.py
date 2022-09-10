@@ -1,5 +1,6 @@
 import os
 import pandas as pd
+import darts
 from darts import TimeSeries
 from sklearn.preprocessing import MinMaxScaler, StandardScaler, RobustScaler
 from darts.dataprocessing.transformers import Scaler
