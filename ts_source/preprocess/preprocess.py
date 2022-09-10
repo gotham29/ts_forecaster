@@ -136,6 +136,9 @@ def scale_data(data, features, scale_type=False, scaler=False, rescale=False):
     d_shape = data_.data_array().shape
     myshape = (d_shape[0], d_shape[1])
     data_ = pd.DataFrame( reshape_datats(data_, myshape) , columns=features)
+    cols_toadd = [c for c in data if c not in data_]
+    for _,c in enumerate(cols_toadd):
+        data_.insert(loc=_, column=c, value=data[c].values)
     return data_, transformer
 
 
