@@ -286,10 +286,9 @@ def get_modnames_preds(modnames_models, df, time_col, forecast_horizon, scaler, 
                                     LAG=max(LAG_MIN, get_model_lag(mod_name, model)),
                                     time_col=time_col,
                                     forecast_horizon=forecast_horizon)
-
-        if scaler:
-            preds = scale_data(preds, features, scale_type=False, scaler=scaler, rescale=True)
         df_preds = pd.DataFrame(preds, columns=features)
+        if scaler:
+            preds = scale_data(df_preds, features, scale_type=False, scaler=scaler, rescale=True)
         time_vals = df[time_col].values[-df_preds.shape[0]:]
         df_preds.insert(0, time_col, time_vals)
         modnames_preds[mod_name] = df_preds

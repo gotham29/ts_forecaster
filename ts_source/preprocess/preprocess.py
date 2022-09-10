@@ -133,4 +133,5 @@ def scale_data(data, features, scale_type=False, scaler=False, rescale=False):
         data_ = transformer.inverse_transform(data_ts)
     else:  #scale
         data_ = transformer.fit_transform(data_ts)
-    return data, scaler
+    data_ = pd.DataFrame(data_.data_array().values, columns=features)
+    return data_, scaler
