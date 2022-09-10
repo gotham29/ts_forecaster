@@ -26,6 +26,8 @@ from darts.models import (
     LightGBMModel,
 )
 
+LAG_MIN = 3
+
 METRICNAMES_METRICS = {
     'mape': mape,
     'mase': mase,

@@ -484,3 +484,24 @@ def add_timecol(df, time_col):
     ts_vals = [base + dt.timedelta(days=_) for _ in range(df.shape[0])]
     df.insert(0, time_col, ts_vals)
     return df
+
+
+def get_diff(true, pred):
+    """
+    Purpose:
+        Get absolute value diff between 'true' & 'pred' arrays
+    Inputs:
+        true:
+            type: np.array
+            meaning: true values to compare with 'pred'
+        pred:
+            type: np.array
+            meaning: pred values to compare with 'true'
+    Outputs:
+        abs_diff:
+            type: float
+            meaning: total diff between 'true' & 'pred'
+
+    """
+    abs_diff = abs(true - pred).sum()
+    return abs_diff
