@@ -7,16 +7,16 @@ import datetime as dt
 from darts.models.forecasting.forecasting_model import ForecastingModel
 from darts.models.forecasting.torch_forecasting_model import TorchForecastingModel
 
-
-MODNAMES_KNOWN = ['VARIMA', 'NBEATSModel', 'TCNModel',
-                    'TransformerModel', 'RNNModel', 'LightGBMModel',
-                ]
+MODNAMES_KNOWN = ['ARIMA', 'VARIMA', 'NBEATSModel', 'TCNModel',
+                  'TransformerModel', 'RNNModel', 'LightGBMModel',
+                  ]
 
 MODNAMES_OBJTYPES = {
     'RNNModel': TorchForecastingModel,
     'TransformerModel': TorchForecastingModel,
     'NBEATSModel': TorchForecastingModel,
     'TCNModel': TorchForecastingModel,
+    'ARIMA': ForecastingModel,
     'VARIMA': ForecastingModel,
     'LightGBMModel': ForecastingModel,
 }
@@ -191,24 +191,29 @@ def validate_config(config, data, output_dir, output_dirs):
         config['dirs'] = output_dirs
 
     # Ensure scale is valid
-    scale_valid = [False,  'minmax', 'standard', 'robust']
+    scale_valid = [False, 'minmax', 'standard', 'robust']
     assert config['scale'] in scale_valid, f"scale expected one of {scale_valid}\n  found --> {config['scale']}"
 
     # Ensure test prop between 0.1 and 0.7
-    assert 0.1 <= config['test_prop'] <= 0.7, f"test_prop expected between 0.1 and 0.7! found\n  --> {config['test_prop']}"
+    assert 0.1 <= config[
+        'test_prop'] <= 0.7, f"test_prop expected between 0.1 and 0.7! found\n  --> {config['test_prop']}"
 
     # Ensure data_cap between 300 and 100000
-    assert 50 <= config['data_cap'] <= 100000, f"data_cap expected between 50 and 100000! found\n  --> {config['data_cap']}"
+    assert 50 <= config[
+        'data_cap'] <= 100000, f"data_cap expected between 50 and 100000! found\n  --> {config['data_cap']}"
 
     known_metrics = ['mae', 'mse', 'rmse', 'mape', 'mase', 'ope', 'marre', 'r2_score', 'dtw_metric']
     # Ensure eval_metric is known
-    assert config['eval_metric'] in known_metrics, f"eval_metric unknown! --> {config['eval_metric']}\nKnown --> {known_metrics}"
+    assert config[
+               'eval_metric'] in known_metrics, f"eval_metric unknown! --> {config['eval_metric']}\nKnown --> {known_metrics}"
 
     # Ensure time_col in data
-    assert config['time_col'] in data, f"time_col not found in data! --> {config['time_col']}\nFound --> {sorted(data.columns)}"
+    assert config[
+               'time_col'] in data, f"time_col not found in data! --> {config['time_col']}\nFound --> {sorted(data.columns)}"
 
     # Ensure forecast_horizon between 1 and 100
-    assert 1 <= config['forecast_horizon'] <= 100, f"forecast_horizon expected between 1 and 100! found\n  --> {config['forecast_horizon']}"
+    assert 1 <= config[
+        'forecast_horizon'] <= 100, f"forecast_horizon expected between 1 and 100! found\n  --> {config['forecast_horizon']}"
 
     # Ensure all feaurtes in data
     features_missing = []
@@ -225,11 +230,11 @@ def validate_config(config, data, output_dir, output_dirs):
     features_data = {}
     features_nonnumeric = []
     for feat_type, features in config['features'].items():
-            for feat in features:
-                try:
-                    features_data[feat] = data[feat].astype(float)
-                except:
-                    features_nonnumeric.append(feat)
+        for feat in features:
+            try:
+                features_data[feat] = data[feat].astype(float)
+            except:
+                features_nonnumeric.append(feat)
     assert len(features_nonnumeric) == 0, f"non-numeric features found!\n  --> {features_nonnumeric}"
 
     # Ensure all features have at least 3 unique values in first 1000
@@ -239,7 +244,8 @@ def validate_config(config, data, output_dir, output_dirs):
         feat_uni = len(feat_data[:1000].unique())
         if feat_uni < min_unique:
             features_nonunique.append(feat)
-    assert len(features_nonunique) == 0, f"features with < {min_unique} unique values found!\n  --> {features_nonunique}"
+    assert len(
+        features_nonunique) == 0, f"features with < {min_unique} unique values found!\n  --> {features_nonunique}"
 
     # Ensure modnames are known
     modnames_unknown = []
@@ -250,21 +256,21 @@ def validate_config(config, data, output_dir, output_dirs):
 
     # Add missing keys to modnames_grids
     total_length = data[:config['data_cap']].shape[0]
-    train_length = int(total_length*(1-config['test_prop']))
-    test_length = int(total_length*config['test_prop'])
+    train_length = int(total_length * (1 - config['test_prop']))
+    test_length = int(total_length * config['test_prop'])
     modnames_missingvals = {
         'NBEATSModel': {
-            'output_chunk_length': [ config['forecast_horizon'] ]  #test_length
-            },
+            'output_chunk_length': [config['forecast_horizon']]  # test_length
+        },
         'TCNModel': {
-            'output_chunk_length': [ config['forecast_horizon'] ]  #test_length
-            },
+            'output_chunk_length': [config['forecast_horizon']]  # test_length
+        },
         'TransformerModel': {
-            'output_chunk_length': [ config['forecast_horizon'] ]  #test_length
-            },
+            'output_chunk_length': [config['forecast_horizon']]  # test_length
+        },
         'LightGBMModel': {
-            'output_chunk_length': [ config['forecast_horizon'] ]  #test_length
-            },
+            'output_chunk_length': [config['forecast_horizon']]  # test_length
+        },
         # 'RNNModel': {
         #     'training_length': [ train_length ]
         #     },
@@ -291,11 +297,12 @@ def load_models(dir_models, alg=False):
             type: dict
             meaning: model objs for each modname
     """
-    pkl_files = get_dir_data(dir_=dir_models, ftype='pkl', search='simple', rtype='filename')  #[f for f in os.listdir(dir_models) if '.pkl' in f]
+    pkl_files = get_dir_data(dir_=dir_models, ftype='pkl', search='simple',
+                             rtype='filename')  # [f for f in os.listdir(dir_models) if '.pkl' in f]
     unique_pklnames = list(set([pf.split('.')[0] for pf in pkl_files]))
     print(f"Loading {len(unique_pklnames)} models...")
     modnames_models = {}
-    for uni in unique_pklnames:  #for f in pkl_files:
+    for uni in unique_pklnames:  # for f in pkl_files:
         print(f"  {uni}")
         pkl_path = os.path.join(dir_models, f"{uni}.pkl")
         if alg:
@@ -426,16 +433,17 @@ def validate_args(config: dict, data_path, output_dir, data, output_dirs):
         make_dir(output_dir)
     else:
         # Ensure dir_names are valid and dirs exist
-        dirnames_valid, dirnames_invalid = ['data', 'models', 'results', 'scalers'],[]
+        dirnames_valid, dirnames_invalid = ['data', 'models', 'results', 'scalers'], []
         for dir_name, dir_ in output_dirs.items():
             if dir_name not in dirnames_valid:
                 dirnames_invalid.append(dir_name)
             make_dir(dir_)
-        assert len(dirnames_invalid) == 0, f"invalid dir_names found in 'output_dirs'!\n  found --> {dirnames_invalid}\n  valid --> {dirnames_valid}"
+        assert len(
+            dirnames_invalid) == 0, f"invalid dir_names found in 'output_dirs'!\n  found --> {dirnames_invalid}\n  valid --> {dirnames_valid}"
     return data
 
 
-def get_dir_data(dir_:str, ftype:str='pkl', search:str='walk', rtype:str='filename'):
+def get_dir_data(dir_: str, ftype: str = 'pkl', search: str = 'walk', rtype: str = 'filename'):
     """
     Purpose:
         Gather all files of 'ftype' from 'dir_'
@@ -462,12 +470,12 @@ def get_dir_data(dir_:str, ftype:str='pkl', search:str='walk', rtype:str='filena
                 continue
             files += ftypes
             for ft in ftypes:
-                path_ = os.path.join(pw[0], ft)  #ftypes[0]
+                path_ = os.path.join(pw[0], ft)  # ftypes[0]
                 paths.append(path_)
     else:  # simple search
         files = [p for p in os.listdir(dir_) if ftype in p]
-        paths = [os.path.join(dir_,f) for f in files]
-    data = files if rtype=='filename' else paths
+        paths = [os.path.join(dir_, f) for f in files]
+    data = files if rtype == 'filename' else paths
     return data
 
 

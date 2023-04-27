@@ -20,6 +20,7 @@ from darts.metrics import (
     dtw_metric)
 from darts.utils.statistics import check_seasonality, plot_acf, plot_residuals_analysis, plot_hist
 from darts.models import (
+    ARIMA,
     VARIMA,
     NBEATSModel,
     TCNModel,
@@ -43,6 +44,7 @@ METRICNAMES_METRICS = {
 }
 
 MODNAMES_MODELS = {
+    'ARIMA':ARIMA,
     'VARIMA':VARIMA,
     'RNNModel':RNNModel,
     'NBEATSModel':NBEATSModel,
@@ -52,6 +54,7 @@ MODNAMES_MODELS = {
 }
 
 MODNAMES_LAGPARAMS = {
+    'ARIMA':'p',
     'VARIMA':'p',
     'RNNModel':'input_chunk_length',
     'NBEATSModel':'input_chunk_length',
